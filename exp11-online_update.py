@@ -1,16 +1,18 @@
 # coding: utf-8
 
 """
-Date: 07/08/2019
+Date: 08/12/2019
 Author: Lingqing Gan @ Stony Brook University
 
-Title: exp07-three_source_multi.py
+Title: exp11-online update.py
 
 Description:
-1. Run the three node models multiple times;
-2. Collect data according to the given format;
-3. Save the data into a pickle data file.
-4. The data file will be read and plotted by exp09.py.
+1. Adapted from exp07;
+2. Single experiment, just let total_rep=1;
+3. Online update;
+4. Remove the branch when the prob is lower than a given threshold.
+5. Major detection change lies in F09.
+6. If a possible trace is removed, the prob just saves as -0.1;
 """
 
 import numpy as np
@@ -18,7 +20,7 @@ import time
 import pickle
 
 from functions.F07_IYSNetwork_stable_01 import IYSNetwork
-from functions.F08_IYSDetection_stable_01 import IYSDetection
+from functions.F09_IYSDetection_online_efficient_01 import IYSDetection
 
 def main():
     """
@@ -31,7 +33,9 @@ def main():
     network_size = 3
     t = 1000   # total number of time instants
 
-    total_rep = 100
+    threshold = 0.1 # 0 < threshold < 1
+
+    total_rep = 1
 
     gibbs_rep = 10000
 
@@ -68,7 +72,7 @@ def main():
         # item[i][j]=1 means node i influences node j
         # item[i][i]=0 all the time though each node technically
         # influences themselves
-        adjacency_matrix = np.array([[0,1,1], [0,0,1], [1,0,0]])
+        adjacency_matrix = np.array([[0,0,0], [0,0,0], [0,0,0]])
 
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho = rho)
@@ -89,7 +93,7 @@ def main():
         aprob_history = regime_detection.aprob_history
         rho_estimate = regime_detection.rho_history
 
-
+        # save the data in the structure to write to pickle
         for i in range(0, network_size):
 
             final_aprob = []
@@ -125,7 +129,7 @@ def main():
     save_dict["data"] = data_dict
 
     # the file name
-    file_name = "exp07-data-" + time_string + ".pickle"
+    file_name = "exp11-data-" + time_string + ".pickle"
 
     print(file_name)
 

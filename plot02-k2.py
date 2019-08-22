@@ -2,7 +2,7 @@ __author__ = "Lingqing Gan"
 
 # ------------------------------------------------------------------------------------
 
-#   FILE_NAME:      plot_k2.py
+#   FILE_NAME:      plot02-k2.py
 
 #   DESCRIPTION:    Interactive Yule-Simon process
 

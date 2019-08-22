@@ -2,7 +2,7 @@ __author__ = "Lingqing Gan"
 
 # ------------------------------------------------------------------------------------
 
-#   FILE_NAME:      histogram_of_results_2.py
+#   FILE_NAME:      plot05-histogram_of_results_2.py
 
 #   DESCRIPTION:    reading the results produced by YSP_inter_bi_bidir_macro.py
 #                   and draw histogram(s) with it.
