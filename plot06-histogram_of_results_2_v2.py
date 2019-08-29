@@ -165,7 +165,6 @@ ax1.tick_params(axis='y', direction = 'in', length = 2, width = axis_width)
 ax2.tick_params(axis='y', direction = 'in', length = 2, width = axis_width)
 
 
-
 ax1.tick_params(axis='x', direction = 'in', length = 0, width = axis_width)
 ax2.tick_params(axis='x', direction = 'in', length = 0, width = axis_width)
 

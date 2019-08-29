@@ -21,7 +21,10 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 
 # input the file name
-file_name = "exp07-data-" + "20190805-111329" + ".pickle"
+name_string = "exp07-data-20190828-164208"
+file_name = name_string + ".pickle"
+
+print("file name: ", file_name)
 
 # read the file
 with open (file_name, 'rb') as handle:
@@ -38,6 +41,15 @@ MC_rep = parameter_dict["total number of MC simulations"]
 Gibbs_rep = parameter_dict["Gibbs sampling iterations"]
 rho_true = parameter_dict["rho true value"]
 
+# write the data to a easy-to-read txt file
+data_file_name = name_string + ".txt"
+
+with open (data_file_name, 'w+') as  handle:
+    for item in iter(parameter_dict):
+        print(item, ":", parameter_dict[item])
+        handle.write(str(item)+": "+str(parameter_dict[item])+"\n")
+
+handle.close()
 
 
 # plot Gibbs sampling results - histogram
@@ -90,9 +102,12 @@ for ax in axs.reshape(-1):
 
     i += 1
 
+pic_name = name_string + ".pdf"
+
 plt.show()
 
-print("Hey let's stop here.")
+# save the plot as a pdf file
+#plt.savefig(pic_name)
 
 
 

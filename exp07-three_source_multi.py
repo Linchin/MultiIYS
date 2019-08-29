@@ -29,12 +29,10 @@ def main():
     #                    PARAMETERS
     # =================================================
     network_size = 3
-    t = 1000   # total number of time instants
+    t = 10000           # total number of time instants
 
-    total_rep = 100
-
+    total_rep = 30
     gibbs_rep = 10000
-
     rho = 0.75
 
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
@@ -68,7 +66,7 @@ def main():
         # item[i][j]=1 means node i influences node j
         # item[i][i]=0 all the time though each node technically
         # influences themselves
-        adjacency_matrix = np.array([[0,1,1], [0,0,1], [1,0,0]])
+        adjacency_matrix = np.array([[0,0,0], [0,0,0], [0,0,0]])
 
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho = rho)
