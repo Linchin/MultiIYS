@@ -196,7 +196,7 @@ class IYSDetection:
                 # !!! NEEDS CHANGE INTO A SET OF VIABLE TRACES
                 for j in range(0, 2**(self.__network_size-1)):
 
-                    print(i,j)
+                    # print(i,j)
 
                     # # generate code for the current model
 
@@ -231,7 +231,7 @@ class IYSDetection:
                     model_likelihood, rho_est = self.__model_likelihood_cut_traces(
                                                        i, j, current_model_code)
 
-                    print(model_likelihood)
+                    # print(model_likelihood)
                     aprob_save.append(model_likelihood)
 
                     # save the likelihood, rho, aprob to history data

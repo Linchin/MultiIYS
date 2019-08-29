@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 
 # input the file name
-name_string = "exp07-data-20190828-164208"
+name_string = "exp11-data-20190823-113131"
 file_name = name_string + ".pickle"
 
 print("file name: ", file_name)
@@ -70,16 +70,29 @@ color_vector = np.linspace(0, 1, 2 ** (network_size - 1))
 
 i = 0
 
+bins = np.linspace(0, 3, 20)
+
 for ax in axs.reshape(-1):
 
     # Retrieve data for the current subplot
     current_node_history_alpha = data_save["data"][i]
 
+    all_data = []
+    label_list = []
+    color_vector_plot = []
+
     for j in range(0, 2 ** (network_size - 1)):
 
-        ax.hist(current_node_history_alpha[j]["rho"],
-                label=j,
-                alpha=0.5)
+
+        all_data.append(current_node_history_alpha[j]["rho"])
+        label_list.append(j)
+        color_vector_plot.append(color_jet(color_vector[j]))
+
+    ax.hist(all_data,
+                label=label_list,
+                bins=bins,
+                color=color_vector_plot
+                )
 
     # x-axis
 #    time_axis = [i for i in range(0, len(current_node_history[0]))]

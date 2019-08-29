@@ -35,7 +35,7 @@ def main():
 
     threshold = 0.1 # 0 < threshold < 1
 
-    total_rep = 1
+    total_rep = 10
 
     gibbs_rep = 10000
 
