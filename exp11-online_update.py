@@ -75,10 +75,12 @@ def main():
         adjacency_matrix = np.array([[0,0,0], [0,0,0], [0,0,0]])
 
         # create the i-YS network object instance
-        network = IYSNetwork(adjacency_matrix, rho = rho)
+        network = IYSNetwork(adjacency_matrix, rho=rho)
 
         # create the i-YS detection object instance
-        regime_detection = IYSDetection(network_size, gibbs_rep)
+        regime_detection = IYSDetection(network_size=network_size,
+                                        gibbs_rep=gibbs_rep,
+                                        threshold=threshold)
 
         # for each time instant:
         for i in range(0, t):

@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 
 # input the file name
-file_name = "exp07-data-20190828-164208" + ".pickle"
+file_name = "exp07-data-20190829-162024" + ".pickle"
 
 # read the file
 with open (file_name, 'rb') as handle:
@@ -42,6 +42,8 @@ MC_rep = parameter_dict["total number of MC simulations"]
 Gibbs_rep = parameter_dict["Gibbs sampling iterations"]
 rho_true = parameter_dict["rho true value"]
 
+for item in iter(parameter_dict):
+    print(item, ":", parameter_dict[item])
 
 # plot model selection results - histogram
 

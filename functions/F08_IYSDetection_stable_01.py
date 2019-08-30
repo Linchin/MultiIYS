@@ -153,7 +153,7 @@ class IYSDetection:
 
             # only start estimate if the current node starts a new regime
             # if self.__new_regime_indicator[i] == 1:
-            if self.__network_time == 999:
+            if self.__network_time == 9999:
 
                 # list that saves the aprob of each model
                 aprob_save = []
@@ -363,6 +363,11 @@ class IYSDetection:
     def __ys_seq_likelihood(n, alpha):
         """
         Returns the likelihood of a specific sequence.
+
+        Problem: 20190820
+        When the sequence is very long, the returned value of likelihood
+        gets very small. And then it gets to zero.
+
         Args:
             n: list
                 The sequence.
@@ -379,11 +384,11 @@ class IYSDetection:
 
             if i > 0:
 
-                p *= alpha * scipy.special.beta(i, alpha + 1)
+                p *= alpha * scipy.special.beta(i, alpha + 1) * 3**i
 
             else:
 
-                p *= alpha * scipy.special.beta(-i, alpha)
+                p *= alpha * scipy.special.beta(-i, alpha) * 3**i
 
         return p
 

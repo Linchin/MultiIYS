@@ -1,0 +1,8 @@
+network size: 3
+adjacency matrix: [[0 0 0]
+ [0 0 0]
+ [0 0 0]]
+total time instants: 10000
+total number of MC simulations: 30
+Gibbs sampling iterations: 10000
+rho true value: 0.75

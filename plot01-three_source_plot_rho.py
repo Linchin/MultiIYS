@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 
 # input the file name
-name_string = "exp11-data-20190823-113131"
+name_string = "exp07-data-20190829-162024"
 file_name = name_string + ".pickle"
 
 print("file name: ", file_name)
