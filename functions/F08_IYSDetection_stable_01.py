@@ -153,7 +153,7 @@ class IYSDetection:
 
             # only start estimate if the current node starts a new regime
             # if self.__new_regime_indicator[i] == 1:
-            if self.__network_time == 9999:
+            if self.__network_time == 999:
 
                 # list that saves the aprob of each model
                 aprob_save = []

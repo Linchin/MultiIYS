@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 
 # input the file name
-file_name = "exp07-data-20190829-162024" + ".pickle"
+file_name = "exp07-data-20190830-111149" + ".pickle"
 
 # read the file
 with open (file_name, 'rb') as handle:
