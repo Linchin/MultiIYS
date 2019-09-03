@@ -523,11 +523,11 @@ class IYSDetection:
 
             if i > 0:
 
-                p *= alpha * scipy.special.beta(i, alpha + 1) * 1.5**i
+                p *= alpha * scipy.special.beta(i, alpha + 1) * 1.5**abs(i)
 
             else:
 
-                p *= alpha * scipy.special.beta(-i, alpha) * 1.5**i
+                p *= alpha * scipy.special.beta(-i, alpha) * 1.5**abs(i)
 
         return p
 
