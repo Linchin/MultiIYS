@@ -162,9 +162,12 @@ class IYSDetection:
                 for j in range(0, 2**(self.__network_size-1)):
 
                     # generate code for the current model
+
+                    # (
                     # the ith node is located at the ith last digit
                     # if a digit is 1, that means the corresponding
                     # node is influencing the ith node in this model
+                    # )
 
                     temp = bin(j)[2:].zfill(self.__network_size-1)
 
@@ -193,7 +196,7 @@ class IYSDetection:
                     self.__likelihood_history[i][j].append(model_likelihood)
                     self.__rho_history[i][j].append(rho_est)
 
-                # update the a posterior prob and save it
+                # update the a posterior prob and save it, normalize
 
                 normal_constant = sum(aprob_save)
 
