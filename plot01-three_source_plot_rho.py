@@ -51,9 +51,6 @@ with open (data_file_name, 'w+') as  handle:
 
 handle.close()
 
-
-# plot Gibbs sampling results - histogram
-
 # =================================================
 #                      PLOT
 # =================================================
@@ -93,23 +90,6 @@ for ax in axs.reshape(-1):
                 bins=bins,
                 color=color_vector_plot
                 )
-
-    # x-axis
-#    time_axis = [i for i in range(0, len(current_node_history[0]))]
-
-#    ax.set_xlim(min(time_axis), max(time_axis))
-#    ax.set_ylim(-0.03, 1.03)
-
-#    node_history_list = sorted(current_node_history.items())
-
-    # cycle through all data line
- #   for item, c in zip(node_history_list, color_vector):
-  #      l = item[0]
-  #      j = item[1]
-
-   #     current_color = color_jet(c)
-
-    #    ax.plot(time_axis, j, color=current_color, label=l)
 
     ax.legend(loc="upper right")
 
