@@ -238,7 +238,7 @@ class IYSDetection:
 
         s_obj = s_n[s_index]
 
-        # obtain the index of influential nodes by the current model
+        # obtain the index of influencing nodes by the current model
         neighbor_index_from_model = [self.__network_size-i-1
                                    for i, letter in enumerate(model)
                                    if letter == "1"]
@@ -357,6 +357,9 @@ class IYSDetection:
         Problem: 20190820
         When the sequence is very long, the returned value of likelihood
         gets very small. And then it gets to zero.
+
+        attempted solution:
+        for each time instant, we multiply the likelihood by a constant > 1.
 
         Args:
             n: list
