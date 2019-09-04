@@ -171,23 +171,8 @@ class IYSDetection:
                     # node is influencing the ith node in this model
                     # )
 
-                    temp = bin(j)[2:].zfill(self.__network_size-1)
-
-                    if i == 0:
-                        current_model_code = temp + "0"
-
-                    else:
-                        current_model_code = ""
-
-                        for jj in range(0, len(temp)):
-
-                            if jj + i == self.__network_size - 1:
-
-                                current_model_code += "0" + temp[jj]
-
-                            else:
-
-                                current_model_code += temp[jj]
+                    current_model_code = self.__gen_code(i, j,
+                                                         self.__network_size)
 
                     # calculate the likelihood of current model
 
@@ -396,4 +381,34 @@ class IYSDetection:
                 p *= alpha * scipy.special.beta(-i, alpha) * 1.5**abs(i)
 
         return p
+
+    @staticmethod
+    def __gen_code(i, j, network_size):
+        # generate code for the current model
+
+        # (
+        # the ith node is located at the ith last digit
+        # if a digit is 1, that means the corresponding
+        # node is influencing the ith node in this model
+        # )
+
+        temp = bin(j)[2:].zfill(network_size - 1)
+
+        if i == 0:
+            current_model_code = temp + "0"
+
+        else:
+            current_model_code = ""
+
+            for jj in range(0, len(temp)):
+
+                if jj + i == network_size - 1:
+
+                    current_model_code += "0" + temp[jj]
+
+                else:
+
+                    current_model_code += temp[jj]
+
+        return current_model_code
 
