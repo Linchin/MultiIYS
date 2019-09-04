@@ -73,7 +73,8 @@ class IYSDetection:
 
     def read_new_time(self, new_col):
         """
-        *Callable* method that reads the new signal of the network,
+        *Callable*
+        method that reads the new signal of the network,
         and then update the model likelihoods based on new signal.
         Args:
             new_col:
@@ -89,7 +90,8 @@ class IYSDetection:
         if self.__network_time == -1:
 
             self.__network_time = 0
-            self.__new_regime_indicator = np.zeros((self.__network_size, 1))
+            self.__new_regime_indicator = np.zeros(
+                (self.__network_size, 1))
 
             for i in range(0, self.__network_size):
 
@@ -110,7 +112,6 @@ class IYSDetection:
         # update the regime history
         for i in range(0, self.__network_size):
 
-            # append the new signals to the history
             self.__signal_history[i].append(new_col[i])
 
         # update the prob of each of the model
@@ -152,6 +153,8 @@ class IYSDetection:
 
             # only start estimate if the current node starts a new regime
             # if self.__new_regime_indicator[i] == 1:
+            # to make the program run faster we let the detection
+            # only estimate in the last time slot
             if self.__network_time == 999:
 
                 # list that saves the aprob of each model
