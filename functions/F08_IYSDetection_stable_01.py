@@ -10,7 +10,6 @@ import numpy as np
 import scipy.special
 
 
-
 class IYSDetection:
     """
     Detect the i-YS relationship on the network.
