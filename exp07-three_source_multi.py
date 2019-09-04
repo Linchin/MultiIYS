@@ -87,7 +87,6 @@ def main():
         aprob_history = regime_detection.aprob_history
         rho_estimate = regime_detection.rho_history
 
-
         for i in range(0, network_size):
 
             final_aprob = []
@@ -129,7 +128,8 @@ def main():
 
     # save the file
     with open(file_name, 'wb') as handle:
-        pickle.dump(save_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(save_dict, handle,
+                    protocol=pickle.HIGHEST_PROTOCOL)
 
     return 0
 
