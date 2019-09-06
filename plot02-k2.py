@@ -27,10 +27,8 @@ __author__ = "Lingqing Gan"
 # ------------------------------------------------------------------------------------
 
 import numpy as np
-from scipy.stats import wishart, multivariate_normal, bernoulli, invwishart, beta
-from scipy.stats import gamma as sci_gamma
-from math import *
 import matplotlib.pyplot as plt
+
 
 def p_M0(k1, k2, alpha):
 
@@ -230,8 +228,8 @@ ax2.legend(loc='upper center', bbox_to_anchor=(0.5, -0.18), borderaxespad=0.5,fr
 
 plt.tight_layout()
 
-
-plt.savefig("plot_k2.pdf",bbox_inches='tight')
+plt.show()
+#plt.savefig("plot_k2.pdf",bbox_inches='tight')
 
 
 

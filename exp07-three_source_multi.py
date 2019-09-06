@@ -11,6 +11,10 @@ Description:
 2. Collect data according to the given format;
 3. Save the data into a pickle data file.
 4. The data file will be read and plotted by exp09.py.
+
+20190906 notes
+added the code to save the original signals.
+Then we can analyze it.
 """
 
 import numpy as np
@@ -46,7 +50,7 @@ def main():
 
         aprob_best_model_hist[i] = []
 
-        data_dict[i] = {}
+        data_dict[i] = {"signal":[]}
 
         for j in range(0, 2**(network_size-1)):
 
@@ -66,7 +70,9 @@ def main():
         # item[i][j]=1 means node i influences node j
         # item[i][i]=0 all the time though each node technically
         # influences themselves
-        adjacency_matrix = np.array([[0,0,1], [1,0,0], [1,0,0]])
+        adjacency_matrix = np.array([[0, 0, 1],
+                                     [1, 0, 0],
+                                     [1, 0, 0]])
 
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho = rho)
@@ -82,6 +88,9 @@ def main():
 
             # run an online update
             regime_detection.read_new_time(np.copy(new_signal))
+
+            for j in range(0, network_size):
+                data_dict[j]["signal"].append(new_signal[j])
 
         # save the likelihood history
         aprob_history = regime_detection.aprob_history

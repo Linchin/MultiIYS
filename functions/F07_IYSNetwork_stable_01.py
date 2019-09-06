@@ -98,7 +98,7 @@ class IYSNetwork:
             node_list.append(IYSDNode_normal(
                         node_index=i,
                         node_neighbors=node_neighbors,
-                        rho = self.__rho))
+                        rho=self.__rho))
 
         return node_list
 
