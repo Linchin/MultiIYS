@@ -152,13 +152,13 @@ class IYSDetection_parse:
         method that reads the new signal of the network,
         and then update the model likelihoods based on new signal.
         """
-
+        # notes!!!!!!!
+        # to-do:
+        # save the parsed data in this function
         # ----------------------------------------------------
         # deal with the first time instant
         # ----------------------------------------------------
-
         if self.__network_time == -1:
-
             self.__network_time = 0
             self.__new_regime_indicator = np.zeros(
                 (self.__network_size, 1))
@@ -166,11 +166,9 @@ class IYSDetection_parse:
                 self.__signal_history[i].append(0)
             self.__estimate_update()
             return 0
-
         # ----------------------------------------------------
         # after the first time instant
         # ----------------------------------------------------
-
         self.__network_time += 1
         self.__new_regime_indicator = np.copy(new_col)
         # update the regime history
@@ -191,7 +189,6 @@ class IYSDetection_parse:
         # ----------------------------------------------------
         # deal with the first time instant
         # ----------------------------------------------------
-
         if self.__network_time == 0:
             prob_temp = 1 / 2
             for i in range(0, self.__network_size):
@@ -202,7 +199,6 @@ class IYSDetection_parse:
                         self.__likelihood_history[i][j].append(prob_temp)
                         self.__aprob_history[i][j].append(prob_temp)
             return 0
-
         # ----------------------------------------------------
         # after the first time instant
         # ----------------------------------------------------
