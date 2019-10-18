@@ -1,6 +1,16 @@
 """
 A class that detects the i-YS relationship.
 
+10/16/2019 update
+*
+
+
+10/10/2019 update
+* Now we call the separated signals "unambiguous". :)
+* Sorted out the data structure.
+* Wrote down the data struct in the notebook.
+* Wrote down the program outline in the notebook.
+
 09/19/2019 update
 F10_IYSDetection_separate.py
 
@@ -121,7 +131,7 @@ class IYSDetection_parse:
                 self.__likelihood_history[i][j] = []
                 self.__aprob_history[i][j] = []
                 self.__rho_history[i][j] = []
-                self.__pure_regime[i][j] = []
+                self.__pure_regime[i][j] = []      # item: tuple (T, t)
                 self.__unambi_regime_count[i].append(0)
         # --------------------------------------------------------------
 
@@ -150,10 +160,12 @@ class IYSDetection_parse:
         """
         *Callable*
         method that reads the new signal of the network,
-        and then update the model likelihoods based on new signal.
+        parse the data,
+        save the data to the structs in this object.
+        call self.__estimate_update() to update the model likelihood.
         """
-        # notes!!!!!!!
-        # to-do:
+        # notes!!!!!
+        # %%%%%%%%%%%%%   to-do:    %%%%%%%%%%%%%%%%%%
         # save the parsed data in this function
         # ----------------------------------------------------
         # deal with the first time instant
@@ -174,17 +186,53 @@ class IYSDetection_parse:
         # update the regime history
         for i in range(0, self.__network_size):
             self.__signal_history[i].append(new_col[i])
+
+            # for any node that has started a new regime, we update the
+            # following data structure
+            if new_col[i] == 1:
+                self.__regime_shift_time[i].append(self.__network_time)
+                # decide if this new regime is ambiguous or unambiguous
+                begin = self.__regime_shift_time[i][-2]
+                end = self.__regime_shift_time[i][-1]
+                count = 0
+                for j in range(0, self.__network_size):
+                    if j == i:
+                        continue
+                    last_rgm_shft = self.__regime_shift_time[j][-1]
+                    if begin < last_rgm_shft < end:
+                        count += 1
+                        influencer = j
+                        inf_time = last_rgm_shft
+
+                # case 1: there is no influencing neighbor
+                if count == 0:
+                    self.__unambi_regime_count[i][i] += 1
+                    self.__pure_regime[i][i].append((end-begin, None))
+                # case 2: there is exactly 1 possible influencer
+                elif count == 1:
+                    self.__unambi_regime_count[i][influencer] += 1
+                    self.__pure_regime[i][influencer].append((end-begin,
+                                                              inf_time-begin))
+                # case 3: there are at least two possible influencers
+                else:
+                    pass
+
         # update the prob of each of the model
         self.__estimate_update()
         return 0
 
+
     def __estimate_update(self):
         """
-        Read the new signal for each new time instant.
+        Function that carries out the estimation algorithm.
+
         If there is a new regime for any of the nodes,
         we carry out the estimation algo.
-        [core func]
-        :return: the a posterior prob list for each node
+        This is a version that saves time:
+        we only start the estimation (Gibbs sampling) when the
+        last time instant is reached.
+
+        :return: the a posterior prob list for each node and their neighbor
         """
         # ----------------------------------------------------
         # deal with the first time instant
@@ -192,234 +240,64 @@ class IYSDetection_parse:
         if self.__network_time == 0:
             prob_temp = 1 / 2
             for i in range(0, self.__network_size):
-                range_temp = range(0, self.__network_size)
-                range_temp.remove(i)
-                for j in range(0, range_temp):
+                for j in range(0, self.__network_size):
                     if j != i:
                         self.__likelihood_history[i][j].append(prob_temp)
                         self.__aprob_history[i][j].append(prob_temp)
+                    else:
+                        self.__likelihood_history[i][j].append(None)
+                        self.__aprob_history[i][j].append(None)
             return 0
         # ----------------------------------------------------
         # after the first time instant
         # ----------------------------------------------------
+        # skip estimation if not yet at last time instant:
+        if self.__network_time + 1 != self.__total_time_instant:
+            return 0
+
+        # carry out the estimation only at the last time instant
         for i in range(0, self.__network_size):
-
-            # i: the node of interest
-            # j: the neighbor we want to assess if it's influencing node i
-
-            # only start estimate if the current node starts a new regime
-            # 1. check if this regime is pure
-            # 2. if pure, then save the starting/ending time,
-            #    the length, the index of the influencing node,
-            #    the relative time of the influencing node
-            #    (use a dict)
-            if self.__new_regime_indicator[i] == 1:
-                # list that saves the aprob of each model
-                # a_prob_save = []
-
-                # set of index of neighbors
-                range_temp = range(0, self.__network_size)
-                range_temp.remove(i)
-
-                current_regime_start = self.__regime_shift_time[i][-1]
-                current_regime_end = self.__network_time
-                self.__regime_shift_time[i].append(current_regime_end)
-
-                pure_ind = True
-                total_influencing_node = 0
-                influencing_node_index = None
-                influencing_node_rep = 0
-                influencing_node_time = []
-
-                # go through all models to see if this new regime is pure
-                for j in range_temp:
-                    cond1 = \
-                        current_regime_start < self.__regime_shift_time[j][-1]
-                    cond2 = \
-                        self.__regime_shift_time[j][-1] < current_regime_end
-                    if cond1 and cond2:
-                        influencing_node_index = j
-                        total_influencing_node += 1
-                        if total_influencing_node > 1:
-                            pure_ind = False
-                            break
-
-                if not pure_ind:
+            for j in range(0, self.__network_size):
+                # Case 1: no influencer, then skip
+                if i == j:
                     continue
+                # Case 2: exactly 1 influencer
+                # 1) Generate the sequence related to node i & j
+                # 2) Gibbs sampling on the just generated sequence
+                # 3) Calculate the likelihood of both models
+                # 4) Model selection
+                # 5) Save the data
 
-                if not influencing_node_index:
-                    self.__pure_regime[i][i].append((current_regime_start,
-                                                     current_regime_end))
-                    influencing_node_index = i
-                else:
-                    for item in reversed(self.__signal_history[
-                                             influencing_node_index]):
-                        cond1 = current_regime_start < item
-                        cond2 = item < current_regime_end
-                        if cond1 and cond2:
-                            influencing_node_rep += 1
-                            influencing_node_time.append(item)
-                        else:
-                            break
 
-                pure_regime_info = {"start_end": (current_regime_start,
-                                                  current_regime_end),
-                                    "length": current_regime_end -
-                                                current_regime_start,
-                                    "influencing_node": influencing_node_index,
-                                    "influencing_rep": influencing_node_rep,
-                                    "influencing_time": influencing_node_time}
-                self.__pure_regime[i][influencing_node_index].append(
-                    pure_regime_info)
 
-                #### next: to 
-                # go through all possible models and calculate the prob
-                for j in range_temp:
 
-                    # generate code for the current model
-                    # (
-                    # the ith node is located at the ith last digit
-                    # if a digit is 1, that means the corresponding
-                    # node is influencing the ith node in this model
-                    # )
-
-                    # current_model_code = self.__gen_code(i, j,
-                    #                                     self.__network_size)
-
-                    # calculate the likelihood of current model
-
-                    # keep track of the number of "pure" regimes for the j^th
-                    # model
-
-                    model_likelihood, rho_est = self.__model_likelihood(i, j)
-                    aprob_save.append(model_likelihood)
-
-                    self.__likelihood_history[i][j].append(model_likelihood)
-                    self.__rho_history[i][j].append(rho_est)
-
-                # update the a posterior prob and save it, normalize
-
-                normal_constant = sum(aprob_save)
-
-                norm_aprob_save = [x / normal_constant for x in aprob_save]
-
-                for j in range(0, 2 ** (self.__network_size - 1)):
-
-                    self.__aprob_history[i][j].append(norm_aprob_save[j])
-
-            # to make the program run faster we let the detection
-            # only estimate in the last time slot
-            # if self.__network_time == self.__total_time_instant - 1:
-
-    def __model_likelihood(self, i, current_model):
-        """
-        Returns the likelihood of node *i* with *current_model*.
-        Args:
-            i: int
-                The index of the node of interest.
-            current_model:
-                The model that we consider. [format?]
-        Returns:
-            model_prob: float in [0, 1]
-                The calculated likelihood of *current_model*.
-        """
-
-        seq = self.__book_keeping_generic(i,
-                                          self.__signal_history,
-                                          current_model)
-
-        alpha_est = self.__gibbs_sampling(seq)
-
-        model_liklhd = self.__ys_seq_likelihood(seq, alpha_est)
-
-        return model_liklhd, alpha_est
-
-    def __book_keeping_generic(self, s_index, s_n, model):
-        """
-        Return the lengths of regimes given the model.
-        This can be applied to any node over the network,
-        with any model that is specified in the parameter.
-        [Deterministic.]
-        Args:
-            s_index: int
-                The index of the node of interest.
-            s_n: dict
-                The dict of signals history of all nodes
-            model: binary string
-                The hypothesis model.
-                The value with the node of interest is always 0.
-        Returns:
-            n: 1d array
-                The list of length of regimes of the node
-                of interest.
-        """
-
-        s_obj = s_n[s_index]
-
-        # obtain the index of influencing nodes by the current model
-        neighbor_index_from_model = [self.__network_size-i-1
-                                   for i, letter in enumerate(model)
-                                   if letter == "1"]
-
-        # merge the signals from all the influencing neighbors
-        # so they can be looked as the equivalent of a single node
-
-        new_sequence = [0. for j in range(0, len(s_obj))]
-
-        for i in neighbor_index_from_model:
-
-            for j in range(0, len(s_obj)):
-
-                if s_n[i][j] == 1:
-                    new_sequence[j] = 1
-
-        book_keeping_results = self.__book_keeping_m1(new_sequence, s_obj)
-
-        return book_keeping_results
 
     def __gibbs_sampling(self, n):
-
         # force the gibbs result to be 0.75
         # return 0.75
 
         # parameters
         b_e = 1
         a_e = 1
-
         alpha_e = 0.75
 
         for rep_alpha_index in range(0, self.__rep_alpha):
-
             # draw w_j
             # draw alpha
-
             b_draw_alpha = b_e
-
             for i in range(0, len(n)):
-
                 if n[i] > 0:
-
                     # YS case
-
                     w = np.random.beta(a=alpha_e + 1, b=n[i], size=1)
-
                     b_draw_alpha = b_draw_alpha - log(w)
-
                 else:
-
                     # i-YS case
-
                     w = np.random.beta(a=alpha_e, b=-n[i], size=1)
-
                     if w == 0:
                         w = 0.0000000000001
-
                     b_draw_alpha = b_draw_alpha - log(w)
-
             a_draw_alpha = a_e + len(n)
-
             alpha_e = np.random.gamma(shape=a_draw_alpha, scale=1 / b_draw_alpha)
-
         return alpha_e
 
     @staticmethod
@@ -433,41 +311,30 @@ class IYSDetection_parse:
         This version is slightly different from the older version,
         in that it only append the length of the regime when it is finished.
         """
-
         n2 = np.array([])
-
         if len(s1) == len(s2):
-
             counter = 0
-
             for i in range(0, len(s1)):
-
                 if s2[i] == 0 and s1[i] == 0:
                     counter += 1
-
                 elif s2[i] == 1 and s1[i] == 0:
                     counter += 1
                     n2 = np.append(n2, counter)
                     counter = 0
-
                 elif s2[i] == 0 and s1[i] == 1:
                     counter += 1
                     n2 = np.append(n2, -counter)
                     counter = 0
-
                 elif s2[i] == 1 and s1[i] == 1:
                     counter += 1
                     n2 = np.append(n2, counter)
                     counter = 0
-
                 else:
                     print("signal value is not 0 or 1.")
                     exit(-1)
-
         else:
             print("error!! len(s1) != len(s2)!! --function: book_keeping_m1")
             exit(-1)
-
         return n2
 
     @staticmethod
@@ -506,33 +373,4 @@ class IYSDetection_parse:
 
         return p
 
-    @staticmethod
-    def __gen_code(i, j, network_size):
-        # generate code for the current model
-
-        # (
-        # the ith node is located at the ith last digit
-        # if a digit is 1, that means the corresponding
-        # node is influencing the ith node in this model
-        # )
-
-        temp = bin(j)[2:].zfill(network_size - 1)
-
-        if i == 0:
-            current_model_code = temp + "0"
-
-        else:
-            current_model_code = ""
-
-            for jj in range(0, len(temp)):
-
-                if jj + i == network_size - 1:
-
-                    current_model_code += "0" + temp[jj]
-
-                else:
-
-                    current_model_code += temp[jj]
-
-        return current_model_code
 
