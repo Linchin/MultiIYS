@@ -38,7 +38,6 @@ Check:
 3.
 4.
 
-
 We parse the signal sequences so that with one influenced node,
 we only consider the intervals where this node is only possible to be
 affected by ONE single neighbor.
@@ -263,14 +262,23 @@ class IYSDetection_parse:
                     continue
                 # Case 2: exactly 1 influencer
                 # 1) Generate the sequence related to node i & j
+                s_sf = self.__pure_regime[i][i]
+                s_nb = self.__pure_regime[i][j]
+                n_aln = self.__book_keeping_m0_from_time(s_sf, s_nb)
+                n_ifcd = self.__book_keeping_m1_from_time(s_sf, s_nb)
                 # 2) Gibbs sampling on the just generated sequence
+                alpha_aln = self.__gibbs_sampling(n_aln)
+                alpha_ifcd = self.__gibbs_sampling(n_ifcd)
                 # 3) Calculate the likelihood of both models
+                lklhd_aln = self.__ys_seq_likelihood(n_aln, alpha_aln)
+                lklhd_ifcd = self.__ys_seq_likelihood(n_ifcd, alpha_ifcd)
                 # 4) Model selection
+                temp = lklhd_aln + lklhd_ifcd
+                aprob_aln, aprob_ifcd = lklhd_aln / temp, lklhd_ifcd / temp
                 # 5) Save the data
-
-
-
-
+                self.__likelihood_history[i][j].append((lklhd_aln, lklhd_ifcd))
+                self.__aprob_history[i][j].append((aprob_aln, aprob_ifcd))
+                self.__rho_history[i][j].append((alpha_aln, alpha_ifcd))
 
     def __gibbs_sampling(self, n):
         # force the gibbs result to be 0.75
@@ -301,41 +309,43 @@ class IYSDetection_parse:
         return alpha_e
 
     @staticmethod
-    def __book_keeping_m1(s1, s2):
+    def __book_keeping_m1_from_time(s_sf, s_nb):
         """
-        Return the sequence of regime given M1.
-        If the value in the returned list is negative, it means this regime ended
-        because of a neighbor.
-        Node 1 (s1) is what we want to decide if it has influence over node 2.
-        Node 2 (s2) is the node of interest.
-        This version is slightly different from the older version,
-        in that it only append the length of the regime when it is finished.
+        Return the bookkeeping sequence given the hypothesis that the neighbor
+        has influence.
+        s_sf: the list of regimes where the node is not influenced by anyone
+              (self)
+        s_nb: the list of regimes where the node is possible to be influenced
+              by one neighbor.
+              (neighbor)
+        :return: n
         """
-        n2 = np.array([])
-        if len(s1) == len(s2):
-            counter = 0
-            for i in range(0, len(s1)):
-                if s2[i] == 0 and s1[i] == 0:
-                    counter += 1
-                elif s2[i] == 1 and s1[i] == 0:
-                    counter += 1
-                    n2 = np.append(n2, counter)
-                    counter = 0
-                elif s2[i] == 0 and s1[i] == 1:
-                    counter += 1
-                    n2 = np.append(n2, -counter)
-                    counter = 0
-                elif s2[i] == 1 and s1[i] == 1:
-                    counter += 1
-                    n2 = np.append(n2, counter)
-                    counter = 0
-                else:
-                    print("signal value is not 0 or 1.")
-                    exit(-1)
-        else:
-            print("error!! len(s1) != len(s2)!! --function: book_keeping_m1")
-            exit(-1)
-        return n2
+        n = []
+        for item in s_sf:
+            n.append(item[0])
+        for item in s_nb:
+            n.append(-item[1])
+            n.append(item[0]-item[1])
+        return n
+
+    @staticmethod
+    def __book_keeping_m0_from_time(s_sf, s_nb):
+        """
+        Return the bookkeeping sequence given the hypothesis that the neighbor
+        has no influence.
+        s_sf: the list of regimes where the node is not influenced by anyone
+              (self)
+        s_nb: the list of regimes where the node is possible to be influenced
+              by one neighbor.
+              (neighbor)
+        :return: n
+        """
+        n = []
+        for item in s_sf:
+            n.append(item[0])
+        for item in s_nb:
+            n.append(item[0])
+        return n
 
     @staticmethod
     def __ys_seq_likelihood(n, alpha):
@@ -358,19 +368,12 @@ class IYSDetection_parse:
             p: float in (0, 1)
                 The likelihood of sequence *n*.
         """
-
         p = 1.
-
         for i in n:
-
             if i > 0:
-
                 p *= alpha * scipy.special.beta(i, alpha + 1) * 1.5**abs(i)
-
             else:
-
                 p *= alpha * scipy.special.beta(-i, alpha) * 1.5**abs(i)
-
         return p
 
 
