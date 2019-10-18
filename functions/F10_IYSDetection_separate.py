@@ -202,7 +202,6 @@ class IYSDetection_parse:
                         count += 1
                         influencer = j
                         inf_time = last_rgm_shft
-
                 # case 1: there is no influencing neighbor
                 if count == 0:
                     self.__unambi_regime_count[i][i] += 1
@@ -254,10 +253,13 @@ class IYSDetection_parse:
         if self.__network_time + 1 != self.__total_time_instant:
             return 0
 
+        # print the final number of each type of regimes.
+        
+
         # carry out the estimation only at the last time instant
         for i in range(0, self.__network_size):
             for j in range(0, self.__network_size):
-                # Case 1: no influencer, then skip
+                # Case 1: self influencing, then skip
                 if i == j:
                     continue
                 # Case 2: exactly 1 influencer
@@ -281,9 +283,6 @@ class IYSDetection_parse:
                 self.__rho_history[i][j].append((alpha_aln, alpha_ifcd))
 
     def __gibbs_sampling(self, n):
-        # force the gibbs result to be 0.75
-        # return 0.75
-
         # parameters
         b_e = 1
         a_e = 1
