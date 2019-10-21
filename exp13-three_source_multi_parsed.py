@@ -47,7 +47,7 @@ import time
 import pickle
 
 from functions.F07_IYSNetwork_stable_01 import IYSNetwork
-from functions.F10_IYSDetection_separate import IYSDetection
+from functions.F10_IYSDetection_separate import IYSDetection_parse
 
 
 def main():
@@ -104,14 +104,13 @@ def main():
         network = IYSNetwork(adjacency_matrix, rho = rho)
 
         # create the i-YS detection object instance
-        regime_detection = IYSDetection(network_size, gibbs_rep, t)
+        regime_detection = IYSDetection_parse(network_size,
+                                              gibbs_rep, t)
 
         # for each time instant:
         for i in range(0, t):
-
             # generate the network signal
             new_signal = network.next_time_instant()
-
             # run an online update
             regime_detection.read_new_time(np.copy(new_signal))
 
@@ -153,23 +152,17 @@ def main():
                                "rho true value": rho
                                }
 
-
     save_dict["data"] = data_dict
-
     # the file name
-    file_name = "exp07-data-" + time_string + ".pickle"
-
+    file_name = "exp13-data-" + time_string + ".pickle"
     print(file_name)
-
     # save the file
     with open(file_name, 'wb') as handle:
         pickle.dump(save_dict, handle,
                     protocol=pickle.HIGHEST_PROTOCOL)
-
     return 0
 
 
 if __name__ == "__main__":
-
     main()
 

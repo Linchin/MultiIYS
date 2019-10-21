@@ -48,6 +48,7 @@ added the history of estimated rho value.
 
 from math import log
 from typing import List, Dict
+from sys import stdout
 
 import numpy as np
 import scipy.special
@@ -116,7 +117,7 @@ class IYSDetection_parse:
         self.__pure_regime = {}         # type: Dict[int: Dict[int: List]]
         self.__regime_shift_time = {}   # type: Dict[int: List]
         self.__unambi_regime_count = {} # type: Dict[[i][j]: int]
-        self.__ambi_regime_count = []   # type: List
+        self.__ambi_regime_count = 0    # type: Int
 
         for i in range(0, self.__network_size):
             self.__likelihood_history[i] = {}
@@ -213,7 +214,14 @@ class IYSDetection_parse:
                                                               inf_time-begin))
                 # case 3: there are at least two possible influencers
                 else:
-                    pass
+                    self.__ambi_regime_count
+
+        # print the current number of each type of regimes.
+        # stdout.write("\r%d" % i)
+        # stdout.flush()
+        stdout.write("\r Total: %d, Ambi: %d" % (self.__network_time,
+                                            self.__ambi_regime_count))
+        stdout.flush()
 
         # update the prob of each of the model
         self.__estimate_update()
@@ -252,9 +260,6 @@ class IYSDetection_parse:
         # skip estimation if not yet at last time instant:
         if self.__network_time + 1 != self.__total_time_instant:
             return 0
-
-        # print the final number of each type of regimes.
-        
 
         # carry out the estimation only at the last time instant
         for i in range(0, self.__network_size):
