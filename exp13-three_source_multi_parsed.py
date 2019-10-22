@@ -45,7 +45,6 @@ Then we can analyze it.
 import numpy as np
 import time
 import pickle
-import math
 
 from functions.F07_IYSNetwork_stable_01 import IYSNetwork
 from functions.F10_IYSDetection_separate import IYSDetection_parse
@@ -90,24 +89,28 @@ def main():
                                      [1, 0, 0],
                                      [1, 0, 0]])
         # create the i-YS network object instance
-        network = IYSNetwork(adjacency_matrix, rho = rho)
+        network = IYSNetwork(adjacency_matrix, rho=rho)
         # create the i-YS detection object instance
         regime_detection = IYSDetection_parse(network_size,
                                               gibbs_rep, t)
-        # for each time instant:
+        # Generate the signal
         for i in range(0, t):
             # generate the network signal
             new_signal = network.next_time_instant()
-            # run an online update
-            regime_detection.read_new_time(np.copy(new_signal))
+            # save the new signals
             for j in range(0, network_size):
                 data_dict[j]["signal"].append(new_signal[j])
-        # save the likelihood history
+            # run model selection online update
+            regime_detection.read_new_time(np.copy(new_signal))
+
+        # save the model selection results
         aprob_history = regime_detection.aprob_history
         rho_estimate = regime_detection.rho_history
         for i in range(0, network_size):
             for j in range(0, network_size):
-                print(rho_estimate[i][j])
+                print(rho_estimate[i][j], aprob_history[i][j])
+                if i == j:
+                    continue
                 data_dict[i][j]["rho"]["aln"].append(rho_estimate[i][j][-1][0])
                 data_dict[i][j]["rho"]["ifcd"].append(rho_estimate[i][j][-1][1])
                 data_dict[i][j]["aprob"]["aln"].append(aprob_history[i][j][-1][0])
@@ -140,4 +143,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -126,7 +126,7 @@ class IYSDetection_parse:
             for j in range(0, self.__network_size):
                 self.__likelihood_history[i][j] = []
                 self.__aprob_history[i][j] = []
-                self.__rho_history[i][j] = []
+                self.__rho_history[i][j] = []       # item: tuple
                 self.__pure_regime[i][j] = []      # item: tuple (T, t)
                 self.__unambi_regime_count[i].append(0)
 
