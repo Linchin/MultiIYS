@@ -78,7 +78,6 @@ def main():
 
     for rep_exp_index in range(0, total_rep):
         print("Current repetition: rep=", rep_exp_index)
-
         # =================================================
         #                      MODEL
         # =================================================
@@ -106,7 +105,6 @@ def main():
         # save the likelihood history
         aprob_history = regime_detection.aprob_history
         rho_estimate = regime_detection.rho_history
-
         for i in range(0, network_size):
             for j in range(0, network_size):
                 print(rho_estimate[i][j])
