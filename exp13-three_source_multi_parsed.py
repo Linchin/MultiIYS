@@ -45,6 +45,7 @@ Then we can analyze it.
 import numpy as np
 import time
 import pickle
+import math
 
 from functions.F07_IYSNetwork_stable_01 import IYSNetwork
 from functions.F10_IYSDetection_separate import IYSDetection_parse
@@ -54,43 +55,33 @@ def main():
     """
     Main function.
     """
-
     # =================================================
     #                    PARAMETERS
     # =================================================
     network_size = 3
     t = 10000           # total number of time instants
-
     total_rep = 100
     gibbs_rep = 10000
     rho = 0.75
 
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
-    aprob_best_model_hist = {}
-
     # data section of the dict to save
     data_dict = {}
-
     for i in range(0, network_size):
-
-        aprob_best_model_hist[i] = []
-
         data_dict[i] = {"signal":[]}
-
         for j in range(0, 2**(network_size-1)):
-
-            data_dict[i][j] = {"rho": [],
-                               "aprob": []}
+            data_dict[i][j] = {"rho": {"aln":[],
+                                       "ifcd":[]},
+                               "aprob": {"aln":[],
+                                         "ifcd":[]}}
 
     for rep_exp_index in range(0, total_rep):
-
         print("Current repetition: rep=", rep_exp_index)
 
         # =================================================
         #                      MODEL
         # =================================================
-
         # generate network topology
         # directed network.
         # item[i][j]=1 means node i influences node j
@@ -99,47 +90,34 @@ def main():
         adjacency_matrix = np.array([[0, 0, 1],
                                      [1, 0, 0],
                                      [1, 0, 0]])
-
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho = rho)
-
         # create the i-YS detection object instance
         regime_detection = IYSDetection_parse(network_size,
                                               gibbs_rep, t)
-
         # for each time instant:
         for i in range(0, t):
             # generate the network signal
             new_signal = network.next_time_instant()
             # run an online update
             regime_detection.read_new_time(np.copy(new_signal))
-
             for j in range(0, network_size):
                 data_dict[j]["signal"].append(new_signal[j])
-
         # save the likelihood history
         aprob_history = regime_detection.aprob_history
         rho_estimate = regime_detection.rho_history
 
         for i in range(0, network_size):
-
-            final_aprob = []
-
-            for j in range(0, 2**(network_size-1)):
-
-                final_aprob.append(aprob_history[i][j][-1])
-
-                data_dict[i][j]["rho"].append(rho_estimate[i][j][-1])
-                data_dict[i][j]["aprob"].append(aprob_history[i][j][-1])
-
-            max_model_index = final_aprob.index(max(final_aprob))
-
-            aprob_best_model_hist[i].append(max_model_index)
+            for j in range(0, network_size):
+                print(rho_estimate[i][j])
+                data_dict[i][j]["rho"]["aln"].append(rho_estimate[i][j][-1][0])
+                data_dict[i][j]["rho"]["ifcd"].append(rho_estimate[i][j][-1][1])
+                data_dict[i][j]["aprob"]["aln"].append(aprob_history[i][j][-1][0])
+                data_dict[i][j]["aprob"]["ifcd"].append(aprob_history[i][j][-1][1])
 
     # =================================================
     #              SAVE THE DATA
     # =================================================
-
     # create the dict to save
     save_dict = {}
     # parameter section of the dict to save

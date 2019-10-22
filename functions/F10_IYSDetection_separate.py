@@ -1,9 +1,9 @@
 """
 A class that detects the i-YS relationship.
 
-10/16/2019 update
-*
-
+10/22/2019 update
+* Finished writing the separation and corresponding update process;
+* Now start debugging.
 
 10/10/2019 update
 * Now we call the separated signals "unambiguous". :)
@@ -32,12 +32,6 @@ Plan of changes to this version:
     designated number of regimes that need to be satisfied to make the
     Gibbs sampling procedure effective. e.g. effective_regime_number = 20
 
-Check:
-1. working
-2. working
-3.
-4.
-
 We parse the signal sequences so that with one influenced node,
 we only consider the intervals where this node is only possible to be
 affected by ONE single neighbor.
@@ -57,6 +51,8 @@ import scipy.special
 class IYSDetection_parse:
     """
     Detect the i-YS relationship on the network.
+    We parse the sequence so we only use the unambiguous sequence for
+    detection.
     """
 
     def __init__(self, network_size, gibbs_rep, time_inst):
@@ -66,6 +62,7 @@ class IYSDetection_parse:
 
         # --------------------------------------------------------------
         # 1. Parameters set up
+        # --------------------------------------------------------------
         self.__rep_alpha = gibbs_rep  # rounds of Gibbs sampler for alpha
 
         # instance variables
@@ -87,11 +84,10 @@ class IYSDetection_parse:
         # (to save the time of calculation, we only start the detection
         # process when the total time instants is reached.)
         self.__total_time_instant = time_inst
-        # ----------------------------------------------------------------
 
         # ----------------------------------------------------------------
         # 2. Construct data structures to store all necessary history data
-        #
+        # ----------------------------------------------------------------
         # Dict: self.__likelihood_history[i][j]
         # store the likelihood history of each model as a list
         # Dict: self.__aprob_history[i][j]
@@ -113,11 +109,11 @@ class IYSDetection_parse:
 
         self.__likelihood_history = {}  # type: Dict[int: Dict[int: List]]
         self.__aprob_history = {}       # type: Dict[int: Dict[int: List]]
-        self.__rho_history = {}         # type: Dict[int: Dict[int: List]]
+        self.__rho_history = {}         # type: Dict[int: Dict[int: List(tuple)]]
         self.__pure_regime = {}         # type: Dict[int: Dict[int: List]]
         self.__regime_shift_time = {}   # type: Dict[int: List]
         self.__unambi_regime_count = {} # type: Dict[[i][j]: int]
-        self.__ambi_regime_count = 0    # type: Int
+        self.__ambi_regime_count = 0    # type: int
 
         for i in range(0, self.__network_size):
             self.__likelihood_history[i] = {}
@@ -133,9 +129,10 @@ class IYSDetection_parse:
                 self.__rho_history[i][j] = []
                 self.__pure_regime[i][j] = []      # item: tuple (T, t)
                 self.__unambi_regime_count[i].append(0)
-        # --------------------------------------------------------------
 
+    # ----------------------------------------------------------------
     # API: methods for read only parameters
+    # ----------------------------------------------------------------
     @property
     def likelihood_history(self):
         return self.__likelihood_history
@@ -165,7 +162,7 @@ class IYSDetection_parse:
         call self.__estimate_update() to update the model likelihood.
         """
         # ----------------------------------------------------
-        # deal with the first time instant
+        # 1st time instant
         # ----------------------------------------------------
         if self.__network_time == -1:
             self.__network_time = 0
@@ -177,7 +174,7 @@ class IYSDetection_parse:
             self.__estimate_update()
             return 0
         # ----------------------------------------------------
-        # after the first time instant
+        # 2nd time instant and later
         # ----------------------------------------------------
         self.__network_time += 1
         self.__new_regime_indicator = np.copy(new_col)
