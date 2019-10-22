@@ -164,9 +164,6 @@ class IYSDetection_parse:
         save the data to the structs in this object.
         call self.__estimate_update() to update the model likelihood.
         """
-        # notes!!!!!
-        # %%%%%%%%%%%%%   to-do:    %%%%%%%%%%%%%%%%%%
-        # save the parsed data in this function
         # ----------------------------------------------------
         # deal with the first time instant
         # ----------------------------------------------------
@@ -176,6 +173,7 @@ class IYSDetection_parse:
                 (self.__network_size, 1))
             for i in range(0, self.__network_size):
                 self.__signal_history[i].append(0)
+                self.__regime_shift_time[i].append(0)
             self.__estimate_update()
             return 0
         # ----------------------------------------------------
@@ -186,7 +184,6 @@ class IYSDetection_parse:
         # update the regime history
         for i in range(0, self.__network_size):
             self.__signal_history[i].append(new_col[i])
-
             # for any node that has started a new regime, we update the
             # following data structure
             if new_col[i] == 1:
@@ -214,19 +211,29 @@ class IYSDetection_parse:
                                                               inf_time-begin))
                 # case 3: there are at least two possible influencers
                 else:
-                    self.__ambi_regime_count
+                    self.__ambi_regime_count += 1
 
         # print the current number of each type of regimes.
         # stdout.write("\r%d" % i)
         # stdout.flush()
-        stdout.write("\r Total: %d, Ambi: %d" % (self.__network_time,
-                                            self.__ambi_regime_count))
-        stdout.flush()
+        stdout.write("Total: %d; Ambi: %d; Unam: %d %d %d %d %d %d %d %d %d\n"
+                     % (self.__network_time,
+                        self.__ambi_regime_count,
+                        self.__unambi_regime_count[0][0],
+                        self.__unambi_regime_count[0][1],
+                        self.__unambi_regime_count[0][2],
+                        self.__unambi_regime_count[1][0],
+                        self.__unambi_regime_count[1][1],
+                        self.__unambi_regime_count[1][2],
+                        self.__unambi_regime_count[2][0],
+                        self.__unambi_regime_count[2][1],
+                        self.__unambi_regime_count[2][2]
+                        ))
+        # stdout.flush()
 
         # update the prob of each of the model
         self.__estimate_update()
         return 0
-
 
     def __estimate_update(self):
         """

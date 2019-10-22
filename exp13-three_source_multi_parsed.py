@@ -59,7 +59,7 @@ def main():
     #                    PARAMETERS
     # =================================================
     network_size = 3
-    t = 1000           # total number of time instants
+    t = 10000           # total number of time instants
 
     total_rep = 100
     gibbs_rep = 10000
@@ -142,7 +142,6 @@ def main():
 
     # create the dict to save
     save_dict = {}
-
     # parameter section of the dict to save
     save_dict["parameters"] = {"network size": network_size,
                                "adjacency matrix": adjacency_matrix,
