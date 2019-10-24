@@ -123,5 +123,4 @@ class IYSNetwork:
             # save the data in the history data list
             new_col[i] = new_signal
             self.__signal_history[i].append(new_signal)
-
         return new_col

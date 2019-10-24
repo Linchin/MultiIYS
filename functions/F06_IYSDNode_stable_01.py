@@ -106,30 +106,22 @@ class IYSDNode_normal:
 
         if self.__time_instant == -1:
             # 1st time instant
-
             self.__time_instant = 0
             new_signal = 0
             self.__counter = 1
             self.__signal_history.append(new_signal)
-
             return new_signal
 
         else:
             # 2nd time instant and later
-
             old_time = self.__time_instant
-
             self.__time_instant += 1
-
             # decide if the node will reset its counter
             # DETERMINISTIC NODE
-
             # combine the neighbor signals
             combined_signal = 0
             if len(self.__node_neighbors) > 0:
-
                 for neighbor_index in self.__node_neighbors:
-
                     neighbor_sig = network_signal_history[
                         neighbor_index][old_time]
                     if neighbor_sig == 1:
@@ -147,17 +139,12 @@ class IYSDNode_normal:
                     self.__counter = 1
                 else:
                     print("combined neighbor signal value error.")
-
             else:
                 print("new signal error - node class, next time instant")
 
             # decide if this node will start a new regime
-
             prob = self.__rho / (self.__counter + self.__rho)
-
             new_signal = np.random.binomial(1, prob)
-
             self.__signal_history.append(new_signal)
-
             # update the corresponding data
             return new_signal

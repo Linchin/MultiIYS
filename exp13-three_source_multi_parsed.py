@@ -25,12 +25,6 @@ Plan of changes to this version:
     designated number of regimes that need to be satisfied to make the
     Gibbs sampling procedure effective. e.g. effective_regime_number = 20
 
-Check:
-1.
-2.
-3.
-4.
-
 Past Description:
 1. Run the three node models multiple times;
 2. Collect data according to the given format;
@@ -65,7 +59,7 @@ def main():
 
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
-    # data section of the dict to save
+    # data section of the dict to be saved
     data_dict = {}
     for i in range(0, network_size):
         data_dict[i] = {"signal":[]}
@@ -88,16 +82,16 @@ def main():
         # adjacency_matrix = np.array([[0, 0, 0],
         #                              [0, 0, 0],
         #                              [0, 0, 0]])
-        adjacency_matrix = np.array([[0,0],
-                                     [0,0]])
+        adjacency_matrix = np.array([[0, 0],
+                                     [0, 0]])
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho=rho)
         # create the i-YS detection object instance
         regime_detection = IYSDetection_parse(network_size,
                                               gibbs_rep, t)
-        # Generate the signal
+        # evolve the network and detection algorithm
         for i in range(0, t):
-            # generate the network signal
+            # generate the network signal for the next time instant
             new_signal = network.next_time_instant()
             # save the new signals
             for j in range(0, network_size):

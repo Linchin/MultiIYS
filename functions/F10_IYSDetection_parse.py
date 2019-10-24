@@ -296,6 +296,15 @@ class IYSDetection_parse:
                 # 3) Calculate the likelihood of both models
                 lklhd_aln = self.__ys_seq_likelihood(n_aln, alpha_aln)
                 lklhd_ifcd = self.__ys_seq_likelihood(n_ifcd, alpha_ifcd)
+                sum_aln = 0
+                sum_ifcd = 0
+                for item in n_aln:
+                    sum_aln += abs(item)
+                for item in n_ifcd:
+                    sum_ifcd += abs(item)
+                print(len(n_aln), sum_aln, n_aln)
+                print(len(n_ifcd), sum_ifcd, n_ifcd)
+                print(i, j, lklhd_aln, lklhd_ifcd)
                 # 4) Model selection
                 temp = lklhd_aln + lklhd_ifcd
                 aprob_aln, aprob_ifcd = lklhd_aln / temp, lklhd_ifcd / temp
