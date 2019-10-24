@@ -47,7 +47,7 @@ import time
 import pickle
 
 from functions.F07_IYSNetwork_stable_01 import IYSNetwork
-from functions.F10_IYSDetection_separate import IYSDetection_parse
+from functions.F10_IYSDetection_parse import IYSDetection_parse
 
 
 def main():
@@ -57,9 +57,9 @@ def main():
     # =================================================
     #                    PARAMETERS
     # =================================================
-    network_size = 3
-    t = 10000           # total number of time instants
-    total_rep = 100
+    network_size = 2
+    t = 1000           # total number of time instants
+    total_rep = 1
     gibbs_rep = 10000
     rho = 0.75
 
@@ -85,9 +85,11 @@ def main():
         # item[i][j]=1 means node i influences node j
         # item[i][i]=0 all the time though each node technically
         # influences themselves
-        adjacency_matrix = np.array([[0, 0, 1],
-                                     [1, 0, 0],
-                                     [1, 0, 0]])
+        # adjacency_matrix = np.array([[0, 0, 0],
+        #                              [0, 0, 0],
+        #                              [0, 0, 0]])
+        adjacency_matrix = np.array([[0,0],
+                                     [0,0]])
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho=rho)
         # create the i-YS detection object instance
@@ -105,14 +107,14 @@ def main():
 
         # save the model selection results
         aprob_history = regime_detection.aprob_history
-        rho_estimate = regime_detection.rho_history
+        rho_history = regime_detection.rho_history
         for i in range(0, network_size):
             for j in range(0, network_size):
-                print(rho_estimate[i][j], aprob_history[i][j])
+                print(rho_history[i][j], aprob_history[i][j])
                 if i == j:
                     continue
-                data_dict[i][j]["rho"]["aln"].append(rho_estimate[i][j][-1][0])
-                data_dict[i][j]["rho"]["ifcd"].append(rho_estimate[i][j][-1][1])
+                data_dict[i][j]["rho"]["aln"].append(rho_history[i][j][-1][0])
+                data_dict[i][j]["rho"]["ifcd"].append(rho_history[i][j][-1][1])
                 data_dict[i][j]["aprob"]["aln"].append(aprob_history[i][j][-1][0])
                 data_dict[i][j]["aprob"]["ifcd"].append(aprob_history[i][j][-1][1])
 

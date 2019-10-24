@@ -1,6 +1,9 @@
 # coding: utf-8
 
 """
+10/24/2019 note
+Rereading the code, checking the correctness. Improving the comments.
+
 A class that contains the i-YS network.
 
 F05 version:
@@ -10,9 +13,9 @@ some simple and direct result.
 The network class is changed to use these testing nodes.
 
 """
-
 import numpy as np
 from functions.F06_IYSDNode_stable_01 import IYSDNode_normal
+
 
 class IYSNetwork:
     """
@@ -45,7 +48,6 @@ class IYSNetwork:
 
         # history data (read only)
         self.__signal_history = {}
-
         for i in range(0, self.__network_size):
             self.__signal_history[i] = []
 
@@ -83,6 +85,7 @@ class IYSNetwork:
     def __create_nodes(self):
         """
         Create a node that is an object of the IYSNode class.
+        A part of initiation.
         Returns: list
         The list of network nodes.
         """
@@ -91,15 +94,14 @@ class IYSNetwork:
         for i in range(0, self.__network_size):
 
             # list of the indices of this node's neighbor
-            node_neighbors = \
-            [j for j, x in enumerate(self.__adjacency_matrix[:, i])
+            # that are influencing the node
+            node_neighbors = [
+                j for j, x in enumerate(self.__adjacency_matrix[:, i])
                                                         if x == 1]
-
             node_list.append(IYSDNode_normal(
                         node_index=i,
                         node_neighbors=node_neighbors,
                         rho=self.__rho))
-
         return node_list
 
     def next_time_instant(self):
@@ -116,13 +118,10 @@ class IYSNetwork:
 
         # go through all the nodes
         for i in range(0, self.__network_size):
-
             # each node goes to new time instant
             new_signal = self[i].next_time_instant(self.__signal_history)
-
             # save the data in the history data list
             new_col[i] = new_signal
-
             self.__signal_history[i].append(new_signal)
 
         return new_col

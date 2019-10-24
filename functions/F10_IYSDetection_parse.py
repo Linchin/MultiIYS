@@ -12,7 +12,7 @@ A class that detects the i-YS relationship.
 * Wrote down the program outline in the notebook.
 
 09/19/2019 update
-F10_IYSDetection_separate.py
+F10_IYSDetection_parse.py
 
 Update 09/23/2019:
 Plan of changes to this version:
@@ -59,19 +59,11 @@ class IYSDetection_parse:
         """
         Create an i-YS relationship detection object.
         """
-
         # --------------------------------------------------------------
         # 1. Parameters set up
         # --------------------------------------------------------------
         self.__rep_alpha = gibbs_rep  # rounds of Gibbs sampler for alpha
-
-        # instance variables
-        self.__network_size = network_size
-
-        # signal history of the entire network
-        self.__signal_history = {}
-        for i in range(0, self.__network_size):
-            self.__signal_history[i] = []
+        self.__network_size = network_size  # number of nodes in the network
 
         # indicator of starting new regime at the new time instant
         # 0: no; 1: new
@@ -88,6 +80,8 @@ class IYSDetection_parse:
         # ----------------------------------------------------------------
         # 2. Construct data structures to store all necessary history data
         # ----------------------------------------------------------------
+        # Dict: self.__signal_history
+        # signal history of the entire network
         # Dict: self.__likelihood_history[i][j]
         # store the likelihood history of each model as a list
         # Dict: self.__aprob_history[i][j]
@@ -106,28 +100,27 @@ class IYSDetection_parse:
         # stores the number of ambiguous regimes for each node
         # i: index of the node of interest
         # j: the node that is likely to influence node i
-
-        self.__likelihood_history = {}  # type: Dict[int: Dict[int: List]]
-        self.__aprob_history = {}       # type: Dict[int: Dict[int: List]]
-        self.__rho_history = {}         # type: Dict[int: Dict[int: List(tuple)]]
-        self.__pure_regime = {}         # type: Dict[int: Dict[int: List]]
-        self.__regime_shift_time = {}   # type: Dict[int: List]
-        self.__unambi_regime_count = {} # type: Dict[[i][j]: int]
+        self.__signal_history = {}      # type: Dict[int: List[Bool]]
+        self.__likelihood_history = {}  # type: Dict[int: Dict[int: List[int]]]
+        self.__aprob_history = {}       # type: Dict[int: Dict[int: List[int]]]
+        self.__rho_history = {}         # type: Dict[int: Dict[int: List[tuple]]]
+        self.__pure_regime = {}         # type: Dict[int: Dict[int: List[tuple]]]
+        self.__regime_shift_time = {}   # type: Dict[int: List[int]]
+        self.__unambi_regime_count = {} # type: Dict[int: List[int]]
         self.__ambi_regime_count = 0    # type: int
-
         for i in range(0, self.__network_size):
+            self.__signal_history[i] = []
             self.__likelihood_history[i] = {}
             self.__aprob_history[i] = {}
             self.__rho_history[i] = {}
             self.__pure_regime[i] = {}
             self.__regime_shift_time[i] = []
             self.__unambi_regime_count[i] = []
-
             for j in range(0, self.__network_size):
                 self.__likelihood_history[i][j] = []
                 self.__aprob_history[i][j] = []
-                self.__rho_history[i][j] = []       # item: tuple
-                self.__pure_regime[i][j] = []      # item: tuple (T, t)
+                self.__rho_history[i][j] = []    # tuple (rho_aln, rho_ifld)
+                self.__pure_regime[i][j] = []    # tuple (T, t)
                 self.__unambi_regime_count[i].append(0)
 
     # ----------------------------------------------------------------
@@ -156,10 +149,11 @@ class IYSDetection_parse:
     def read_new_time(self, new_col):
         """
         *Callable*
-        method that reads the new signal of the network,
-        parse the data,
-        save the data to the structs in this object.
-        call self.__estimate_update() to update the model likelihood.
+        method that
+        1) reads the new signal of the network,
+        2) parse the data,
+        3) save the data to the structs in this object.
+        4) call self.__estimate_update() to update the model likelihood.
         """
         # ----------------------------------------------------
         # 1st time instant
@@ -193,6 +187,11 @@ class IYSDetection_parse:
                     if j == i:
                         continue
                     last_rgm_shft = self.__regime_shift_time[j][-1]
+                    if last_rgm_shft == end:
+                        if len(self.__regime_shift_time[j]) >= 2:
+                            last_rgm_shft = self.__regime_shift_time[j][-2]
+                        else:
+                            continue
                     if begin < last_rgm_shft < end:
                         count += 1
                         influencer = j
@@ -206,6 +205,8 @@ class IYSDetection_parse:
                     self.__unambi_regime_count[i][influencer] += 1
                     self.__pure_regime[i][influencer].append((end-begin,
                                                               inf_time-begin))
+                    # length of the current regime; relative time point of
+                    # the possible influence
                 # case 3: there are at least two possible influencers
                 else:
                     self.__ambi_regime_count += 1
@@ -213,21 +214,29 @@ class IYSDetection_parse:
         # print the current number of each type of regimes.
         # stdout.write("\r%d" % i)
         # stdout.flush()
-        stdout.write("Total: %d; Ambi: %d; Unam: %d %d %d %d %d %d %d %d %d\n"
+        # stdout.write("Total: %d; Ambi: %d; Unam: %d %d %d %d %d %d %d %d %d\n"
+        #              % (self.__network_time,
+        #                 self.__ambi_regime_count,
+        #                 self.__unambi_regime_count[0][0],
+        #                 self.__unambi_regime_count[0][1],
+        #                 self.__unambi_regime_count[0][2],
+        #                 self.__unambi_regime_count[1][0],
+        #                 self.__unambi_regime_count[1][1],
+        #                 self.__unambi_regime_count[1][2],
+        #                 self.__unambi_regime_count[2][0],
+        #                 self.__unambi_regime_count[2][1],
+        #                 self.__unambi_regime_count[2][2]
+        #                 ))
+
+        stdout.write("Total: %d; Ambi: %d; Unam: %d %d %d %d\n"
                      % (self.__network_time,
                         self.__ambi_regime_count,
                         self.__unambi_regime_count[0][0],
                         self.__unambi_regime_count[0][1],
-                        self.__unambi_regime_count[0][2],
                         self.__unambi_regime_count[1][0],
-                        self.__unambi_regime_count[1][1],
-                        self.__unambi_regime_count[1][2],
-                        self.__unambi_regime_count[2][0],
-                        self.__unambi_regime_count[2][1],
-                        self.__unambi_regime_count[2][2]
+                        self.__unambi_regime_count[1][1]
                         ))
         # stdout.flush()
-
         # update the prob of each of the model
         self.__estimate_update()
         return 0
@@ -248,28 +257,32 @@ class IYSDetection_parse:
         # deal with the first time instant
         # ----------------------------------------------------
         if self.__network_time == 0:
-            prob_temp = 1 / 2
+            prob_temp = (1/2, 1/2)
+            none_double = (None, None)
             for i in range(0, self.__network_size):
                 for j in range(0, self.__network_size):
                     if j != i:
                         self.__likelihood_history[i][j].append(prob_temp)
                         self.__aprob_history[i][j].append(prob_temp)
                     else:
-                        self.__likelihood_history[i][j].append(None)
-                        self.__aprob_history[i][j].append(None)
+                        self.__likelihood_history[i][j].append(none_double)
+                        self.__aprob_history[i][j].append(none_double)
             return 0
         # ----------------------------------------------------
-        # after the first time instant
+        # 2nd time instant and later
         # ----------------------------------------------------
         # skip estimation if not yet at last time instant:
         if self.__network_time + 1 != self.__total_time_instant:
             return 0
-
-        # carry out the estimation only at the last time instant
         for i in range(0, self.__network_size):
             for j in range(0, self.__network_size):
                 # Case 1: self influencing, then skip
                 if i == j:
+                    prob_temp = (1/2, 1/2)
+                    none_double = (None, None)
+                    self.__likelihood_history[i][j].append(prob_temp)
+                    self.__aprob_history[i][j].append(prob_temp)
+                    self.__rho_history[i][j].append(none_double)
                     continue
                 # Case 2: exactly 1 influencer
                 # 1) Generate the sequence related to node i & j
@@ -296,7 +309,6 @@ class IYSDetection_parse:
         b_e = 1
         a_e = 1
         alpha_e = 0.75
-
         for rep_alpha_index in range(0, self.__rep_alpha):
             # draw w_j
             # draw alpha
@@ -313,7 +325,7 @@ class IYSDetection_parse:
                         w = 0.0000000000001
                     b_draw_alpha = b_draw_alpha - log(w)
             a_draw_alpha = a_e + len(n)
-            alpha_e = np.random.gamma(shape=a_draw_alpha, scale=1 / b_draw_alpha)
+            alpha_e = np.random.gamma(shape=a_draw_alpha, scale=1/b_draw_alpha)
         return alpha_e
 
     @staticmethod
@@ -349,6 +361,7 @@ class IYSDetection_parse:
         :return: n
         """
         n = []
+        # should I keep this or not??
         for item in s_sf:
             n.append(item[0])
         for item in s_nb:
@@ -379,9 +392,9 @@ class IYSDetection_parse:
         p = 1.
         for i in n:
             if i > 0:
-                p *= alpha * scipy.special.beta(i, alpha + 1) * 1.5**abs(i)
+                p *= alpha * scipy.special.beta(i, alpha + 1)
             else:
-                p *= alpha * scipy.special.beta(-i, alpha) * 1.5**abs(i)
+                p *= alpha * scipy.special.beta(-i, alpha)
         return p
 
 

@@ -1,6 +1,9 @@
 # coding: utf-8
 
 """
+10/24/2019 note
+reread. improve comments. for the parsed case.
+
 Class for i-YS network nodes.
 
 F04 version:
@@ -8,7 +11,6 @@ this version is written to test if the detection code is correct.
 The nodes are designed to generate some code that should yield
 some simple and direct result.
 """
-
 import numpy as np
 
 
@@ -57,7 +59,7 @@ class IYSDNode_normal:
 
         # constant parameters read only
         self.__node_index = node_index
-        self.__node_neighbors = node_neighbors
+        self.__node_neighbors = node_neighbors.copy()
         self.__rho = rho
 
         # parameters that will change over time
@@ -102,8 +104,8 @@ class IYSDNode_normal:
                 Returns the new signal of this node.
         """
 
-        # the starting time instant
         if self.__time_instant == -1:
+            # 1st time instant
 
             self.__time_instant = 0
             new_signal = 0
@@ -113,6 +115,7 @@ class IYSDNode_normal:
             return new_signal
 
         else:
+            # 2nd time instant and later
 
             old_time = self.__time_instant
 
@@ -127,22 +130,17 @@ class IYSDNode_normal:
 
                 for neighbor_index in self.__node_neighbors:
 
-                    neighbor_sig = network_signal_history[neighbor_index]\
-                    [old_time]
-
+                    neighbor_sig = network_signal_history[
+                        neighbor_index][old_time]
                     if neighbor_sig == 1:
-
                         combined_signal = 1
 
             # update the counter value
             last_signal = self.__signal_history[-1]
 
             if last_signal == 1:
-
                 self.__counter = 1
-
             elif last_signal == 0:
-
                 if combined_signal == 0:
                     self.__counter += 1
                 elif combined_signal == 1:
