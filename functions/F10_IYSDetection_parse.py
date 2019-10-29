@@ -188,12 +188,14 @@ class IYSDetection_parse:
                 if j == i:
                     continue
                 last_rgm_shft = self.__regime_shift_time[j][-1]
+                if last_rgm_shft == 0:
+                    # ignore the 1st time instant
+                    # because in this case the neighbor won't have influence
+                    # on the node of interest
+                    continue
                 if last_rgm_shft == end:
-                    if len(self.__regime_shift_time[j]) >= 2:
-                        last_rgm_shft = self.__regime_shift_time[j][-2]
-                    else:
-                        continue
-                if begin <= last_rgm_shft <= end-1: # added -1 for the delay
+                    last_rgm_shft = self.__regime_shift_time[j][-2]
+                if begin <= last_rgm_shft <= end-1:
                     count += 1
                     influencer = j
                     inf_time = last_rgm_shft
