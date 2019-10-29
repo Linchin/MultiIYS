@@ -192,7 +192,7 @@ class IYSDetection_parse:
                             last_rgm_shft = self.__regime_shift_time[j][-2]
                         else:
                             continue
-                    if begin < last_rgm_shft < end:
+                    if begin <= last_rgm_shft < end-1: # added -1 for the delay
                         count += 1
                         influencer = j
                         inf_time = last_rgm_shft
@@ -329,6 +329,7 @@ class IYSDetection_parse:
                     b_draw_alpha = b_draw_alpha - log(w)
                 else:
                     # i-YS case
+                    # print(alpha_e, n[i])
                     w = np.random.beta(a=alpha_e, b=-n[i], size=1)
                     if w == 0:
                         w = 0.0000000000001
@@ -353,8 +354,9 @@ class IYSDetection_parse:
         for item in s_sf:
             n.append(item[0])
         for item in s_nb:
-            n.append(-item[1])
-            n.append(item[0]-item[1])
+            n.append(-item[1]-1) # notes: -1 to change the counting
+            n.append(item[0]-item[1]-1) # notes: -1 to change the counting
+
         return n
 
     @staticmethod
