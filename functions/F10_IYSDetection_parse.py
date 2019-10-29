@@ -177,39 +177,60 @@ class IYSDetection_parse:
             self.__signal_history[i].append(new_col[i])
             # for any node that has started a new regime, we update the
             # following data structure
-            if new_col[i] == 1:
-                self.__regime_shift_time[i].append(self.__network_time)
-                # decide if this new regime is ambiguous or unambiguous
-                begin = self.__regime_shift_time[i][-2]
-                end = self.__regime_shift_time[i][-1]
-                count = 0
-                for j in range(0, self.__network_size):
-                    if j == i:
+            if new_col[i] == 0:
+                continue
+            self.__regime_shift_time[i].append(self.__network_time)
+            # decide if this new regime is ambiguous or unambiguous
+            begin = self.__regime_shift_time[i][-2]
+            end = self.__regime_shift_time[i][-1]
+            count = 0
+            for j in range(0, self.__network_size):
+                if j == i:
+                    continue
+                last_rgm_shft = self.__regime_shift_time[j][-1]
+                if last_rgm_shft == end:
+                    if len(self.__regime_shift_time[j]) >= 2:
+                        last_rgm_shft = self.__regime_shift_time[j][-2]
+                    else:
                         continue
-                    last_rgm_shft = self.__regime_shift_time[j][-1]
-                    if last_rgm_shft == end:
-                        if len(self.__regime_shift_time[j]) >= 2:
-                            last_rgm_shft = self.__regime_shift_time[j][-2]
-                        else:
-                            continue
-                    if begin <= last_rgm_shft < end-1: # added -1 for the delay
-                        count += 1
-                        influencer = j
-                        inf_time = last_rgm_shft
-                # case 1: there is no influencing neighbor
-                if count == 0:
-                    self.__unambi_regime_count[i][i] += 1
-                    self.__pure_regime[i][i].append((end-begin, None))
-                # case 2: there is exactly 1 possible influencer
-                elif count == 1:
-                    self.__unambi_regime_count[i][influencer] += 1
-                    self.__pure_regime[i][influencer].append((end-begin,
-                                                              inf_time-begin))
-                    # length of the current regime; relative time point of
-                    # the possible influence
-                # case 3: there are at least two possible influencers
+                if begin <= last_rgm_shft <= end-1: # added -1 for the delay
+                    count += 1
+                    influencer = j
+                    inf_time = last_rgm_shft
+            # case 1: there is no influencing neighbor
+            if count == 0:
+                self.__unambi_regime_count[i][i] += 1
+                if begin == 0:
+                    self.__pure_regime[i][i].append((end+1, None, None))
                 else:
-                    self.__ambi_regime_count += 1
+                    self.__pure_regime[i][i].append((end-begin, None, None))
+            # case 2: there is exactly 1 possible influencer
+            elif count == 1:
+                self.__unambi_regime_count[i][influencer] += 1
+                if begin == 0:
+                    if inf_time < end - 1:
+                        length = end + 1
+                        k1 = inf_time + 2
+                        k2 = end - inf_time - 1
+                    else:
+                        length = end + 1
+                        k1 = length
+                        k2 = 0
+                else:
+                    if inf_time < end - 1:
+                        length = end - begin
+                        k1 = inf_time - begin + 1
+                        k2 = end - inf_time - 1
+                    else:
+                        length = end - begin
+                        k1 = length
+                        k2 = 0
+                self.__pure_regime[i][influencer].append((length, k1, k2))
+                # length of the current regime; relative time point of
+                # the possible influence
+            # case 3: there are at least two possible influencers
+            else:
+                self.__ambi_regime_count += 1
 
         # print the current number of each type of regimes.
         # stdout.write("\r%d" % i)
@@ -278,10 +299,9 @@ class IYSDetection_parse:
             for j in range(0, self.__network_size):
                 # Case 1: self influencing, then skip
                 if i == j:
-                    prob_temp = (1/2, 1/2)
                     none_double = (None, None)
-                    self.__likelihood_history[i][j].append(prob_temp)
-                    self.__aprob_history[i][j].append(prob_temp)
+                    self.__likelihood_history[i][j].append(none_double)
+                    self.__aprob_history[i][j].append(none_double)
                     self.__rho_history[i][j].append(none_double)
                     continue
                 # Case 2: exactly 1 influencer
@@ -302,8 +322,8 @@ class IYSDetection_parse:
                     sum_aln += abs(item)
                 for item in n_ifcd:
                     sum_ifcd += abs(item)
-                print(len(n_aln), sum_aln, n_aln)
-                print(len(n_ifcd), sum_ifcd, n_ifcd)
+#                print(len(n_aln), sum_aln, n_aln)
+#                print(len(n_ifcd), sum_ifcd, n_ifcd)
                 print(i, j, lklhd_aln, lklhd_ifcd)
                 # 4) Model selection
                 temp = lklhd_aln + lklhd_ifcd
@@ -354,9 +374,9 @@ class IYSDetection_parse:
         for item in s_sf:
             n.append(item[0])
         for item in s_nb:
-            n.append(-item[1]-1) # notes: -1 to change the counting
-            n.append(item[0]-item[1]-1) # notes: -1 to change the counting
-
+            n.append(-item[1])
+            if item[2] > 0:
+                n.append(item[2])
         return n
 
     @staticmethod
