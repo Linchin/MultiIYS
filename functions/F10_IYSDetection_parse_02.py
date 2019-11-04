@@ -220,7 +220,7 @@ class IYSDetection_parse:
                 signals_temp_2 = np.zeros(end-begin+1)      # influenced node
                 signals_temp_2[0] = 1
                 signals_temp_2[-1] = 1
-                signals_temp_1[inf_time-begin] = 1
+                signals_temp_1 = inf_time-begin  # not the sequence but the relative time
                 self.__pure_regime[i][influencer].append((signals_temp_1, signals_temp_2))
                 # length of the current regime; relative time point of
                 # the possible influence
@@ -365,6 +365,8 @@ class IYSDetection_parse:
         s_nb: the list of regimes where the node is possible to be influenced
               by one neighbor.
               (neighbor)
+              -- now it's the exact 0/1 signals after parsing but
+              still need reconstruction.
         :return: n
         10/31/2019
         a significant alteration due to the parsing algo.
@@ -377,22 +379,21 @@ class IYSDetection_parse:
         s_1: the reconstructed signal sequence of the influencing node
         """
 
-        # Combine the reconstructed signals
-
+        # reconstruct the signals
         # return an empty sequence if both signals are empty
         if len(s_sf) == 0 and len(s_nb) == 0:
             return np.zeros(0)
-
         # initialize
         s_combined = np.ones(1)
-
         # self
         for i in range(0, len(s_sf)):
-            s_2_combined = np.concatenate(s_combined, s_sf[i][1:])
-
+            s_combined = np.concatenate(s_combined, s_sf[i][1:])
         # from neighbor
         for i in range(0, len(s_nb)):
-            s_combined = np.concatenate(s_combined, s_nb[i])
+            temp = np.zeros(len(s_nb[i][1])-1)
+            temp[-1] = 1
+            temp[s_nb[i][0]-1] = -1
+            s_combined = np.concatenate(s_combined, temp)
 
 
 
