@@ -103,6 +103,10 @@ class IYSDetection_parse:
         # stores the number of ambiguous regimes for each node
         # i: index of the node of interest
         # j: the node that is likely to influence node i
+        # Dict: __combined_signals
+        # stores the combined unambiguous signal that we get after parsing.
+        # i: the node of interest
+        # j: the node likely to be the influencer.
         self.__signal_history = {}      # type: Dict[int: List[Bool]]
         self.__likelihood_history = {}  # type: Dict[int: Dict[int: List[int]]]
         self.__aprob_history = {}       # type: Dict[int: Dict[int: List[int]]]
@@ -111,6 +115,7 @@ class IYSDetection_parse:
         self.__regime_shift_time = {}   # type: Dict[int: List[int]]
         self.__unambi_regime_count = {} # type: Dict[int: List[int]]
         self.__ambi_regime_count = 0    # type: int
+        self.__combined_signals = {}    # type: Dict[int: Dict[int: Dict["m0"/"m1": List]]]
         for i in range(0, self.__network_size):
             self.__signal_history[i] = []
             self.__likelihood_history[i] = {}
@@ -119,12 +124,14 @@ class IYSDetection_parse:
             self.__pure_regime[i] = {}
             self.__regime_shift_time[i] = []
             self.__unambi_regime_count[i] = []
+            self.__combined_signals[i] = {}
             for j in range(0, self.__network_size):
                 self.__likelihood_history[i][j] = []
                 self.__aprob_history[i][j] = []
                 self.__rho_history[i][j] = []    # tuple (rho_aln, rho_ifld)
                 self.__pure_regime[i][j] = []    # tuple (T, t)
                 self.__unambi_regime_count[i].append(0)
+                self.__combined_signals[i][j] = {} # type: Dict["m0"/"m1": List]
 
     # ----------------------------------------------------------------
     # API: methods for read only parameters
@@ -149,6 +156,10 @@ class IYSDetection_parse:
     def regime_shift_time(self):
         return self.__regime_shift_time
 
+    @ property
+    def combined_signals(self):
+        return self.__combined_signals
+
     def read_new_time(self, new_col):
         """
         *Callable*
@@ -162,16 +173,21 @@ class IYSDetection_parse:
         # 1st time instant
         # ----------------------------------------------------
         if self.__network_time == -1:
+
             self.__network_time = 0
             self.__new_regime_indicator = np.ones(
                 (self.__network_size, 1))
+
             for i in range(0, self.__network_size):
                 self.__signal_history[i].append(1)
                 self.__regime_shift_time[i].append(0)
                 self.__unambi_regime_count[i][i] += 1
-                self.__pure_regime[i][i].append((1, None, None))
+                signals_temp_self = np.ones(2)
+                self.__pure_regime[i][i].append(signals_temp_self)
+
             self.__estimate_update()
             return 0
+
         # ----------------------------------------------------
         # 2nd time instant and later
         # ----------------------------------------------------
@@ -179,16 +195,20 @@ class IYSDetection_parse:
         self.__new_regime_indicator = np.copy(new_col)
         # update the regime history
         for i in range(0, self.__network_size):
+
             self.__signal_history[i].append(new_col[i])
+
             # for any node that has started a new regime, we update the
             # following data structure
             if new_col[i] == 0:
                 continue
+
             self.__regime_shift_time[i].append(self.__network_time)
             # decide if this new regime is ambiguous or unambiguous
             begin = self.__regime_shift_time[i][-2]
             end = self.__regime_shift_time[i][-1]
             count_parse = 0
+
             for j in range(0, self.__network_size):
                 if j == i:
                     continue
@@ -204,6 +224,7 @@ class IYSDetection_parse:
                     count_parse += 1
                     influencer = j
                     inf_time = last_rgm_shft
+
             # case 1: there is no influencing neighbor
             if count_parse == 0:
                 self.__unambi_regime_count[i][i] += 1
@@ -212,11 +233,12 @@ class IYSDetection_parse:
                 signals_temp_self[0] = 1
                 signals_temp_self[-1] = 1
                 self.__pure_regime[i][i].append(signals_temp_self)
+
             # case 2: there is exactly 1 possible influencer
             elif count_parse == 1:
                 self.__unambi_regime_count[i][influencer] += 1
                 # reconstruct the signals
-                signals_temp_1 = np.zeros(end-begin+1)      # influencing node
+                # signals_temp_1 = np.zeros(end-begin+1)      # influencing node
                 signals_temp_2 = np.zeros(end-begin+1)      # influenced node
                 signals_temp_2[0] = 1
                 signals_temp_2[-1] = 1
@@ -224,6 +246,7 @@ class IYSDetection_parse:
                 self.__pure_regime[i][influencer].append((signals_temp_1, signals_temp_2))
                 # length of the current regime; relative time point of
                 # the possible influence
+
             # case 3: there are at least 2 possible influencers
             else:
                 self.__ambi_regime_count += 1
@@ -293,25 +316,37 @@ class IYSDetection_parse:
         # ----------------------------------------------------
         for i in range(0, self.__network_size):
             for j in range(0, self.__network_size):
-                # Case 1: self influencing, then skip
+
+                """
+                Case 1: self influencing, then skip, no need to estimate
+                """
                 if i == j:
                     # none_double = (None, None)
                     # self.__likelihood_history[i][j].append(none_double)
                     # self.__aprob_history[i][j].append(none_double)
                     # self.__rho_history[i][j].append(none_double)
                     continue
-                # Case 2: exactly 1 influencer
+
+                """
+                Case 2: decide if node j influences node i
+                """
                 # 1) Generate the sequence related to node i & j
+                #    given influenced/not influenced
                 s_sf = self.__pure_regime[i][i]
                 s_nb = self.__pure_regime[i][j]
-                n_aln = self.__book_keeping_m0_from_time(s_sf, s_nb)
-                n_ifcd = self.__book_keeping_m1_from_time(s_sf, s_nb)
+                s_combined_m0 = self.__combine_parsed_signals(s_sf, s_nb, "m0")
+                s_combined_m1 = self.__combine_parsed_signals(s_sf, s_nb, "m1")
+
+                n_m0 = self.__book_keeping_from_time(s_combined_m0)
+                n_m1 = self.__book_keeping_from_time(s_combined_m1)
+
                 # 2) Gibbs sampling on the just generated sequence
-                alpha_aln = self.__gibbs_sampling(n_aln)
-                alpha_ifcd = self.__gibbs_sampling(n_ifcd)
+                alpha_m0 = self.__gibbs_sampling(n_m0)
+                alpha_m1 = self.__gibbs_sampling(n_m1)
+
                 # 3) Calculate the likelihood of both models
-                lklhd_aln = self.__ys_seq_likelihood(n_aln, alpha_aln)
-                lklhd_ifcd = self.__ys_seq_likelihood(n_ifcd, alpha_ifcd)
+                lklhd_m0 = self.__ys_seq_likelihood(n_m0, alpha_m0)
+                lklhd_m1 = self.__ys_seq_likelihood(n_m1, alpha_m1)
                 # sum_aln = 0
                 # sum_ifcd = 0
                 # for item in n_aln:
@@ -321,14 +356,18 @@ class IYSDetection_parse:
 #                print(len(n_aln), sum_aln, n_aln)
 #                print(len(n_ifcd), sum_ifcd, n_ifcd)
                 print(" Node of interest:", i, " Influencing node:", j,
-                      " P(M_0):", lklhd_aln, " P(M_1):", lklhd_ifcd)
+                      " P(M_0):", lklhd_m0, " P(M_1):", lklhd_m1)
+
                 # 4) Model selection
-                temp = lklhd_aln + lklhd_ifcd
-                aprob_aln, aprob_ifcd = lklhd_aln / temp, lklhd_ifcd / temp
+                temp_norm = lklhd_m0 + lklhd_m1
+                aprob_m0, aprob_m1 = lklhd_m0 / temp_norm, lklhd_m1 / temp_norm
+
                 # 5) Save the data
-                self.__likelihood_history[i][j].append((lklhd_aln, lklhd_ifcd))
-                self.__aprob_history[i][j].append((aprob_aln, aprob_ifcd))
-                self.__rho_history[i][j].append((alpha_aln, alpha_ifcd))
+                self.__likelihood_history[i][j].append((lklhd_m0, lklhd_m1))
+                self.__aprob_history[i][j].append((aprob_m0, aprob_m1))
+                self.__rho_history[i][j].append((alpha_m0, alpha_m1))
+                self.__combined_signals[i][j]["m0"] = s_combined_m0
+                self.__combined_signals[i][j]["m1"] = s_combined_m1
 
     def __gibbs_sampling(self, n):
         # parameters
@@ -340,6 +379,7 @@ class IYSDetection_parse:
             # draw alpha
             b_draw_alpha = b_e
             for i in range(0, len(n)):
+
                 if n[i] > 0:
                     # YS case
                     w = np.random.beta(a=alpha_e+1, b=n[i], size=1)
@@ -351,12 +391,57 @@ class IYSDetection_parse:
                     if w == 0:
                         w = 0.0000000000001
                     b_draw_alpha = b_draw_alpha - log(w)
+
             a_draw_alpha = a_e + len(n)
             alpha_e = np.random.gamma(shape=a_draw_alpha, scale=1/b_draw_alpha)
+
         return alpha_e
 
+    def __combine_parsed_signals(self, s_sf, s_nb, hypo):
+        """
+        s_sf: the collected unambiguous regimes with no possible influencers
+        s_nb: the collected unambiguous regimes with one possible influencer
+        hypo: "m0" for not influenced, "m1" for influenced.
+
+        Returns the reconstructed signals from the parsed signals based on
+        hypothesis.
+
+        """
+        if hypo == "m0" or hypo == "m1":
+            if len(s_sf) == 0 and len(s_nb) == 0:
+                return np.zeros(0)
+
+            # initialize the combined signal
+            s_combined = np.ones(1)
+
+            # self (regimes with no possible influencer)
+            for i in range(0, len(s_sf)):
+                if len(s_sf[i]) > 1:
+                    temp = np.zeros(len(s_sf[i]) - 1)
+                    temp[-1] = 1
+                    s_combined = np.concatenate((s_combined, temp))
+                else:
+                    print(i, s_sf[i])
+                    print("Error!! bookkeeping m0 signal length abnormal.")
+                    exit(-1)
+
+            # from neighbor
+            for i in range(0, len(s_nb)):
+                temp = np.zeros(len(s_nb[i][1]) - 1)
+                temp[-1] = 1
+                if hypo == "m1":            # mark it as -1
+                    temp[s_nb[i][0] - 1] = -1
+                s_combined = np.concatenate((s_combined, temp))
+
+            return s_combined
+
+        else:
+            print("Function __combine_parsed_signals wrong hypothesis code.")
+            exit(-1)
+
+
     @staticmethod
-    def __book_keeping_m1_from_time(s_sf, s_nb):
+    def __book_keeping_from_time(s_combined):
         """
         Return the bookkeeping sequence given the hypothesis that the neighbor
         has influence.
@@ -379,60 +464,18 @@ class IYSDetection_parse:
         s_1: the reconstructed signal sequence of the influencing node
         """
 
-        # reconstruct the signals
-        # return an empty sequence if both signals are empty
-        if len(s_sf) == 0 and len(s_nb) == 0:
-            return np.zeros(0)
-        # initialize
-        s_combined = np.ones(1)
-        # self
-        for i in range(0, len(s_sf)):
-            s_combined = np.concatenate(s_combined, s_sf[i][1:])
-        # from neighbor
-        for i in range(0, len(s_nb)):
-            temp = np.zeros(len(s_nb[i][1])-1)
-            temp[-1] = 1
-            temp[s_nb[i][0]-1] = -1
-            s_combined = np.concatenate(s_combined, temp)
-
-
-
-
-
-
-        n = []
-        # for item in s_sf:
-        #     n.append(item[0])
-        # for item in s_nb:
-        #     n.append(-item[1])
-        #     n.append(item[2])
+        # generate the sequence after book keeping
+        n = np.array([])
+        for i in range(0, len(s_combined)):
+            if s_combined[i] == 1:
+                n = np.append(n, 1)
+            elif s_combined[i] == -1:
+                n[-1] = -n[-1]
+                n = np.append(n, 1)
+            else:
+                n[-1] += 1
         return n
 
-    @staticmethod
-    def __book_keeping_m0_from_time(s_sf, s_nb):
-        """
-        Return the bookkeeping sequence given the hypothesis that the neighbor
-        has no influence.
-        s_sf: the list of regimes where the node is not influenced by anyone
-              (self)
-        s_nb: the list of regimes where the node is possible to be influenced
-              by one neighbor.
-              (neighbor)
-        :return: n
-        10/31/2019
-        a significant alteration due to the parsing algo.
-        the input is reconstructed signals instead of the numbers.
-        This function does:
-        1. Combine the reconstructed signals into a consecutive signal
-            sequence.
-        2. Convert the combined signals into the book keeping sequence.
-        """
-        n = []
-        for item in s_sf:
-            n.append(item[0])
-        for item in s_nb:
-            n.append(item[0])
-        return n
 
     @staticmethod
     def __ys_seq_likelihood(n, alpha):

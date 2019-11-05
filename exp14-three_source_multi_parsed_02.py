@@ -55,7 +55,7 @@ def main():
     #                    PARAMETERS
     # =================================================
     network_size = 2
-    t = 2000           # total number of time instants
+    t = 10           # total number of time instants
     total_rep = 1
     gibbs_rep = 10000
     rho = 0.75
@@ -104,6 +104,7 @@ def main():
         # save the model selection results
         aprob_history = regime_detection.aprob_history
         rho_history = regime_detection.rho_history
+        combined_signal = regime_detection.combined_signals
         for i in range(0, network_size):
             for j in range(0, network_size):
                 print(rho_history[i][j], aprob_history[i][j])
