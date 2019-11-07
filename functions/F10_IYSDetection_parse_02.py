@@ -2,7 +2,8 @@
 A class that detects the i-YS relationship.
 
 11/07/2019 update
-
+I realized that the algo used to parse the data is not correct. Now
+attempt to change it.
 
 10/31/2019 note
 this node is in accordance with the stable_02 series,
@@ -216,11 +217,6 @@ class IYSDetection_parse:
                 if j == i:
                     continue
                 last_rgm_shft = self.__regime_shift_time[j][-1]
-                #if last_rgm_shft == 0:
-                    # ignore the 1st time instant
-                    # because in this case the neighbor won't have influence
-                    # on the node of interest
-                 #   continue
                 if last_rgm_shft == end:
                     last_rgm_shft = self.__regime_shift_time[j][-2]
                 if begin < last_rgm_shft <= end-1:
@@ -242,13 +238,20 @@ class IYSDetection_parse:
                 self.__unambi_regime_count[i][influencer] += 1
                 # reconstruct the signals
                 # signals_temp_1 = np.zeros(end-begin+1)      # influencing node
-                signals_temp_2 = np.zeros(end-begin+1)      # influenced node
-                signals_temp_2[0] = 1
-                signals_temp_2[-1] = 1
-                signals_temp_1 = inf_time-begin  # not the sequence but the relative time
-                self.__pure_regime[i][influencer].append((signals_temp_1, signals_temp_2))
+                regime_recon = np.zeros(end-begin+1)      # influenced node
+                regime_recon[0] = 1
+                regime_recon[-1] = 1
+                #relative_inf_time = [inf_time-begin]  # not the sequence but the relative time
+                relative_inf_time = []
+                # find out the list of relative influence time
+                for item in self.__regime_shift_time[j]:
+                    if begin < item <= end-1:
+                        relative_inf_time.append(item-begin)
+                self.__pure_regime[i][influencer].append((relative_inf_time, regime_recon))
                 # length of the current regime; relative time point of
                 # the possible influence
+
+
 
             # case 3: there are at least 2 possible influencers
             else:
@@ -279,7 +282,7 @@ class IYSDetection_parse:
                         self.__unambi_regime_count[1][0],
                         self.__unambi_regime_count[1][1]
                         ))
-        # stdout.flush()
+
         # update the prob of each of the model
         self.__estimate_update()
         return 0
