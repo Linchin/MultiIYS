@@ -1,6 +1,9 @@
 """
 A class that detects the i-YS relationship.
 
+11/07/2019 update
+
+
 10/31/2019 note
 this node is in accordance with the stable_02 series,
 where the first instant all signals are 1 instead of 0.
@@ -412,7 +415,7 @@ class IYSDetection_parse:
                 return np.zeros(0)
 
             # initialize the combined signal
-            s_combined = np.ones(1)
+            s_combined = np.ones(0)
 
             # self (regimes with no possible influencer)
             for i in range(0, len(s_sf)):

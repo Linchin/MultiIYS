@@ -55,7 +55,7 @@ def main():
     #                    PARAMETERS
     # =================================================
     network_size = 2
-    t = 10           # total number of time instants
+    t = 20           # total number of time instants
     total_rep = 1
     gibbs_rep = 10000
     rho = 0.75
