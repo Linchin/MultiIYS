@@ -55,9 +55,9 @@ def main():
     #                    PARAMETERS
     # =================================================
     network_size = 2
-    t = 20           # total number of time instants
+    t = 1000           # total number of time instants
     total_rep = 1
-    gibbs_rep = 10000
+    gibbs_rep = 20000
     rho = 0.75
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
@@ -85,7 +85,7 @@ def main():
         #                              [0, 0, 0],
         #                              [0, 0, 0]])
         adjacency_matrix = np.array([[0, 0],
-                                     [0, 0]])
+                                     [1, 0]])
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho=rho)
         # create the i-YS detection object instance
