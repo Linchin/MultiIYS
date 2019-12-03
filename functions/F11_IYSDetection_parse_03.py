@@ -172,6 +172,10 @@ class IYSDetection_parse:
     def regime_shift_time(self):
         return self.__regime_shift_time
 
+    @property
+    def signal_history(self):
+        return self.__signal_history
+
     @ property
     def combined_signals(self):
         return self.__combined_signals

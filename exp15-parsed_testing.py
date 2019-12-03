@@ -4,7 +4,7 @@
 12/02/2019 note
 development after exp14.
 The code finally worked. Now we need further tests.
-1. adjust the details so it works on multi-node scenarios
+1. adjust the details so it works on multi-node scenarios (done)
 2. see if it's correct
 
 10/31/2019 note
@@ -62,20 +62,20 @@ def main():
     # =================================================
     network_size = 3
     t = 5000           # total number of time instants
-    total_rep = 1
+    total_rep = 50
     gibbs_rep = 20000
     rho = 0.75
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
     # data section of the dict to be saved
     data_dict = {}
-    for i in range(0, network_size):
-        data_dict[i] = {"signal":[]}
-        for j in range(0, 2**(network_size-1)):
-            data_dict[i][j] = {"rho": {"aln":[],
-                                       "ifcd":[]},
-                               "aprob": {"aln":[],
-                                         "ifcd":[]}}
+    # for i in range(0, network_size):
+    #     data_dict[i] = {"signal":[]}
+    #     for j in range(0, network_size):
+    #         data_dict[i][j] = {"rho": {"aln":[],
+    #                                    "ifcd":[]},
+    #                            "aprob": {"aln":[],
+    #                                      "ifcd":[]}}
 
     for rep_exp_index in range(0, total_rep):
         print("Current repetition: rep=", rep_exp_index)
@@ -83,14 +83,14 @@ def main():
         #                      MODEL
         # =================================================
         # generate network topology
-        # directed network.
-        # item[i][j]=1 means node i influences node j
+        # (directed network)
+        # item[i][j]=1 means node i influences node j, 0 otherwise
         # item[i][i]=0 all the time though each node technically
         # influences themselves
         adjacency_matrix = np.array([[0, 0, 0],
-                                    [0, 0, 0],
-                                    [0, 0, 0]])
-        #adjacency_matrix = np.array([[0, 0],
+                                     [0, 0, 0],
+                                     [0, 0, 0]])
+        # adjacency_matrix = np.array([[0, 0],
         #                             [1, 0]])
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho=rho)
@@ -101,50 +101,60 @@ def main():
         for i in range(0, t):
             # generate the network signal for the next time instant
             new_signal = network.next_time_instant()
+
             # save the new signals
-            for j in range(0, network_size):
-                data_dict[j]["signal"].append(new_signal[j])
+            # for j in range(0, network_size):
+            #    data_dict[j]["signal"].append(new_signal[j])
+
             # run model selection online update
             regime_detection.read_new_time(np.copy(new_signal))
 
         # save the model selection results
+        # each experiment is saved separately
         aprob_history = regime_detection.aprob_history
         rho_history = regime_detection.rho_history
-        combined_signal = regime_detection.combined_signals
-        for i in range(0, network_size):
-            for j in range(0, network_size):
-                print("Node of interest: ", i, "Possible influecing node: ", j)
-                print("rho history: ",rho_history[i][j])
-                print("aprob history: ", aprob_history[i][j])
-                if i == j:
-                    continue
-                data_dict[i][j]["rho"]["aln"].append(rho_history[i][j][-1][0])
-                data_dict[i][j]["rho"]["ifcd"].append(rho_history[i][j][-1][1])
-                data_dict[i][j]["aprob"]["aln"].append(aprob_history[i][j][-1][0])
-                data_dict[i][j]["aprob"]["ifcd"].append(aprob_history[i][j][-1][1])
+        signal_history = regime_detection.signal_history
+
+        data_dict[rep_exp_index] = {}
+        data_dict[rep_exp_index]["aprob"] = aprob_history
+        data_dict[rep_exp_index]["rho"] = rho_history
+        data_dict[rep_exp_index]["signals"] = signal_history
+
+        # # the following code was written to check the correctness
+        # for i in range(0, network_size):
+        #     for j in range(0, network_size):
+        #         print("Node of interest: ", i, "Possible influecing node: ", j)
+        #         print("rho history: ",rho_history[i][j])
+        #         print("aprob history: ", aprob_history[i][j])
+        #         if i == j:
+        #             continue
+        #         data_dict[rep_exp_index].append(aprob_history)
+        #         data_dict[i][j]["rho"]["ifcd"].append(rho_history[i][j][-1][1])
+        #         data_dict[i][j]["aprob"]["aln"].append(aprob_history[i][j][-1][0])
+        #         data_dict[i][j]["aprob"]["ifcd"].append(aprob_history[i][j][-1][1])
 
     # =================================================
     #              SAVE THE DATA
     # =================================================
     # create the dict to save
-    save_dict = {}
-    # parameter section of the dict to save
-    save_dict["parameters"] = {"network size": network_size,
-                               "adjacency matrix": adjacency_matrix,
-                               "total time instants": t,
-                               "total number of MC simulations": total_rep,
-                               "Gibbs sampling iterations": gibbs_rep,
-                               "rho true value": rho
-                               }
-
-    save_dict["data"] = data_dict
+    # parameter section and data section of the dict to save
+    save_dict = {"parameters": {"network size": network_size,
+                                "adjacency matrix": adjacency_matrix,
+                                "total time instants": t,
+                                "total number of MC simulations": total_rep,
+                                "Gibbs sampling iterations": gibbs_rep,
+                                "rho true value": rho,
+                                "data format": "rep, i, j"
+                                },
+                 "data": data_dict}
     # the file name
     file_name = "exp15-data-" + time_string + ".pickle"
-    print(file_name)
+    print("Saved file name: ", file_name)
     # save the file
     with open(file_name, 'wb') as handle:
         pickle.dump(save_dict, handle,
                     protocol=pickle.HIGHEST_PROTOCOL)
+        print("Data saved successfully!")
     return 0
 
 
