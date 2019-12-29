@@ -1,6 +1,22 @@
 # coding: utf-8
 
 """
+File Name:
+exp17-parsed_testing_stable.py
+
+Based on:
+exp07-three_source_multi_parsed.py
+exp07-three_source_multi.py
+exp11-online_update.py
+exp13-three_source_multi_parsed.py
+exp14-three_source_multi_parsed_02.py
+exp15-parsed_testing.py
+
+Author: Lingqing Gan @ Stony Brook University
+
+12/23/2019 notes
+This is the stable version of the code.
+It is changed so we can run real data.
 
 12/02/2019 note
 development after exp14.
@@ -11,13 +27,7 @@ The code finally worked. Now we need further tests.
 10/31/2019 note
 we alter the first signal to be all 1s instead of all 0s.
 
-Date: 09/23/2019
-Author: Lingqing Gan @ Stony Brook University
-
-Title: exp07-three_source_multi_parsed.py
-Based on: exp07-three_source_multi.py
-
-Update 09/23/2019:
+09/23/2019 note
 Plan of changes to this version:
 1. parse all the sequences so that only "pure" sequences are considered.
 2. a pure sequence: the regimes of a node during which only one of the
@@ -41,7 +51,7 @@ Past Description:
 3. Save the data into a pickle data file.
 4. The data file will be read and plotted by exp09.py.
 
-20190906 notes
+09/06/2019 notes
 added the code to save the original signals.
 Then we can analyze it.
 """
@@ -70,13 +80,6 @@ def main():
 
     # data section of the dict to be saved
     data_dict = {}
-    # for i in range(0, network_size):
-    #     data_dict[i] = {"signal":[]}
-    #     for j in range(0, network_size):
-    #         data_dict[i][j] = {"rho": {"aln":[],
-    #                                    "ifcd":[]},
-    #                            "aprob": {"aln":[],
-    #                                      "ifcd":[]}}
 
     for rep_exp_index in range(0, total_rep):
         print("Current repetition: rep=", rep_exp_index)
@@ -121,24 +124,11 @@ def main():
         data_dict[rep_exp_index]["rho"] = rho_history
         data_dict[rep_exp_index]["signals"] = signal_history
 
-        # # the following code was written to check the correctness
-        # for i in range(0, network_size):
-        #     for j in range(0, network_size):
-        #         print("Node of interest: ", i, "Possible influecing node: ", j)
-        #         print("rho history: ",rho_history[i][j])
-        #         print("aprob history: ", aprob_history[i][j])
-        #         if i == j:
-        #             continue
-        #         data_dict[rep_exp_index].append(aprob_history)
-        #         data_dict[i][j]["rho"]["ifcd"].append(rho_history[i][j][-1][1])
-        #         data_dict[i][j]["aprob"]["aln"].append(aprob_history[i][j][-1][0])
-        #         data_dict[i][j]["aprob"]["ifcd"].append(aprob_history[i][j][-1][1])
-
     # =================================================
     #              SAVE THE DATA
     # =================================================
     # create the dict to save
-    # parameter section and data section of the dict to save
+    # parameter section and data section
     save_dict = {"parameters": {"network size": network_size,
                                 "adjacency matrix": adjacency_matrix,
                                 "total time instants": t,
@@ -149,7 +139,7 @@ def main():
                                 },
                  "data": data_dict}
     # the file name
-    file_name = "exp15-data-" + time_string + ".pickle"
+    file_name = "exp16-data-" + time_string + ".pickle"
     print("Saved file name: ", file_name)
     # save the file
     with open(file_name, 'wb') as handle:

@@ -273,7 +273,7 @@ class IYSDetection_parse:
         stdout.write("Total regimes: %d; \nTotal ambiguous regimes: %d; \n"
                      % (self.__network_time,
                         self.__ambi_regime_count))
-        print_string = "Unambiguous regimes #+ of node %d: " + \
+        print_string = "Unambiguous regimes # of node %d: " + \
                        "%d, " * (self.__network_size-1) + "%d" + "\n"
         for i_temp in range(0, self.__network_size):
             print_data = tuple([i_temp]) + tuple(self.__unambi_regime_count[i_temp][j]
