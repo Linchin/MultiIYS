@@ -37,8 +37,6 @@ def main():
 
     rho = 0.75
 
-
-
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
     aprob_best_model_hist = {}
@@ -49,9 +47,7 @@ def main():
     for i in range(0, network_size):
 
         aprob_best_model_hist[i] = []
-
         data_dict[i] = {}
-
         for j in range(0, 2**(network_size-1)):
 
             data_dict[i][j] = {"rho": [],
@@ -59,7 +55,7 @@ def main():
 
     for rep_exp_index in range(0, total_rep):
 
-        print("Current repetition: rep=", rep_exp_index)
+        print("Current repetition: rep =", rep_exp_index)
 
         # =================================================
         #                      MODEL
@@ -70,7 +66,9 @@ def main():
         # item[i][j]=1 means node i influences node j
         # item[i][i]=0 all the time though each node technically
         # influences themselves
-        adjacency_matrix = np.array([[0,1,1], [1,0,1], [1,0,0]])
+        adjacency_matrix = np.array([[0, 0, 0],
+                                     [0, 0, 1],
+                                     [1, 0, 0]])
 
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho = rho)
