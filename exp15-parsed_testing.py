@@ -62,8 +62,8 @@ def main():
     #                    PARAMETERS
     # =================================================
     network_size = 3
-    t = 1000           # total number of time instants
-    total_rep = 50
+    t = 5000           # total number of time instants
+    total_rep = 1
     gibbs_rep = 20000
     rho = 0.75
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())

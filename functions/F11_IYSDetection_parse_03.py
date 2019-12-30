@@ -211,8 +211,10 @@ class IYSDetection_parse:
         # ----------------------------------------------------
         # 2nd time instant and later
         # ----------------------------------------------------
+
         self.__network_time += 1
         self.__new_regime_indicator = np.copy(new_col)
+
         # update the regime history
         for i in range(0, self.__network_size):
 
@@ -223,6 +225,7 @@ class IYSDetection_parse:
                 continue
 
             self.__regime_shift_time[i].append(self.__network_time)
+
             # decide if this new regime is ambiguous or unambiguous
             begin = self.__regime_shift_time[i][-2]
             end = self.__regime_shift_time[i][-1]
@@ -238,14 +241,16 @@ class IYSDetection_parse:
                     count_parse += 1
                     influencer = j
 
-            # case 1: there is no influencing neighbor
+            # case 1: there is 0 influencing neighbor
             if count_parse == 0:
                 self.__unambi_regime_count[i][i] += 1
                 # reconstruct the self influencing signals
                 signals_temp_self = np.zeros(end-begin+1)
                 signals_temp_self[0] = 1
                 signals_temp_self[-1] = 1
-                self.__pure_regime[i][i].append(signals_temp_self)
+                # 12/29/2019
+                # changed the nparray signals_temp_self into tuple
+                self.__pure_regime[i][i].append(tuple(signals_temp_self))
 
             # case 2: there is exactly 1 possible influencer
             elif count_parse == 1:
@@ -257,9 +262,13 @@ class IYSDetection_parse:
                 relative_inf_time = []  # include all relative influencing time
                 # find out the list of relative influence time
                 for item in self.__regime_shift_time[influencer]:
-                    if begin < item <= end-1:
+                    if begin < item < end:
                         relative_inf_time.append(item-begin)
-                self.__pure_regime[i][influencer].append((relative_inf_time, regime_recon))
+                # 12/29/2019
+                # changed the list relative_inf_time into tuple,
+                # also regime_recon
+                self.__pure_regime[i][influencer].append((tuple(relative_inf_time),
+                                                          tuple(regime_recon)))
                 # length of the current regime; relative time point of
                 # the possible influence
 
@@ -278,10 +287,7 @@ class IYSDetection_parse:
         for i_temp in range(0, self.__network_size):
             print_data = tuple([i_temp]) + tuple(self.__unambi_regime_count[i_temp][j]
                                for j in range(0,self.__network_size))
-            #print()
             stdout.write(print_string % print_data)
-
-
 
         # update the prob of each of the model
         self.__estimate_update()
@@ -342,6 +348,9 @@ class IYSDetection_parse:
 
                 n_m0 = self.__book_keeping_from_time(s_combined_m0)
                 n_m1 = self.__book_keeping_from_time(s_combined_m1)
+                # print("check bookkeeping result")
+                # print(n_m0)
+                # print(n_m1)
 
                 # 2) Gibbs sampling on the just generated sequence
                 alpha_m0 = self.__gibbs_sampling(n_m0)
@@ -393,7 +402,8 @@ class IYSDetection_parse:
 
         return alpha_e
 
-    def __combine_parsed_signals(self, s_sf, s_nb, hypo):
+    @staticmethod
+    def __combine_parsed_signals(s_sf, s_nb, hypo):
         """
         s_sf: the collected unambiguous regimes with no possible influencers
         s_nb: the collected unambiguous regimes with one possible influencer
@@ -408,7 +418,10 @@ class IYSDetection_parse:
                 return np.zeros(0)
 
             # initialize the combined signal
-            s_combined = np.ones(0)
+            # 12/29/2019 changed from (0) to (1)
+            # 12/29/2019 changed back
+            # 12/29/2019 changed to 1 again
+            s_combined = np.ones(1)
 
             # self (regimes with no possible influencer)
             for i in range(0, len(s_sf)):
@@ -432,6 +445,11 @@ class IYSDetection_parse:
                         # 11/07/2019 change
                         temp[item - 1] = -1
                 s_combined = np.concatenate((s_combined, temp))
+
+            # 12/29/2019 added:
+            # remove the last 1
+            if len(s_nb) > 0:
+                s_combined = s_combined[0:-1]
 
             return s_combined
 
@@ -462,6 +480,10 @@ class IYSDetection_parse:
         2. Convert the combined signals into the book keeping sequence.
         s_2: the reconstructed signal sequence of the influenced node
         s_1: the reconstructed signal sequence of the influencing node
+
+        12/29/2019 change
+        with the original code, the sequence always ends with a 1.
+        we need to remove that 1.
         """
 
         # generate the sequence after book keeping

@@ -12,9 +12,10 @@ exp13-three_source_multi_parsed.py
 exp14-three_source_multi_parsed_02.py
 exp15-parsed_testing.py
 
+
 Author: Lingqing Gan @ Stony Brook University
 
-12/23/2019 notes
+12/23/2019 notes (exp16)
 Now we make a stable version of the code.
 1. We run it under various scenarios to collect data;
 2. We try running it on real data.
@@ -72,8 +73,8 @@ def main():
     # =================================================
     #                    PARAMETERS
     # =================================================
-    network_size = 8
-    t = 10000           # total number of time instants
+    network_size = 3
+    t = 2000           # total number of time instants
     total_rep = 1
     gibbs_rep = 20000
     rho = 0.75
@@ -89,15 +90,14 @@ def main():
         # =================================================
         # generate network topology
         # (directed network)
-        # item[i][j]=1 means node i influences node j, 0 otherwise
-        # item[i][i]=0 all the time though each node technically
+        # adjacency_matrix[i][j]=1 means node i influences node j, 0 otherwise
+        # adjacency_matrix[i][i]=0 all the time though each node technically
         # influences themselves
         adjacency_matrix = np.zeros((network_size, network_size))
-        adjacency_matrix[0, 3] = 1
-        adjacency_matrix[0, 7] = 1
+        #adjacency_matrix[0, 1] = 1
+        # print(adjacency_matrix)
+        #adjacency_matrix[0, 7] = 1
 
-        # adjacency_matrix = np.array([[0, 0],
-        #                             [1, 0]])
         # create the i-YS network object instance
         network = IYSNetwork(adjacency_matrix, rho=rho)
         # create the i-YS detection object instance

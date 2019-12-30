@@ -14,9 +14,15 @@ exp15-parsed_testing.py
 
 Author: Lingqing Gan @ Stony Brook University
 
+12/29/2019
+Didn't do it here. We have another version that runs on real data
+that's in the real data project. Please see that project.
+
 12/23/2019 notes
 This is the stable version of the code.
 It is changed so we can run real data.
+
+
 
 12/02/2019 note
 development after exp14.
