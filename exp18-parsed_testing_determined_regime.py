@@ -88,7 +88,8 @@ def main():
     # =================================================
     #                    PARAMETERS
     # =================================================
-    network_size = 2
+    network_size = 3
+
     total_rep = 1
     gibbs_rep = 20000
     rho = 0.75
@@ -111,7 +112,7 @@ def main():
         # item[i][i]=0 all the time though each node technically
         # influences themselves
         adjacency_matrix = np.zeros((network_size, network_size))
-        # adjacency_matrix[0, 1] = 1
+        adjacency_matrix[0, 1] = 1
         # adjacency_matrix[1, 0] = 1
 
         # create the i-YS network object instance

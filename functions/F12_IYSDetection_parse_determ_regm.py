@@ -498,7 +498,9 @@ class IYSDetection_parse_dtm_rgm:
 
             # initialize the combined signal
             # 12/29/2019 changed from (0) to (1)
-            s_combined = np.ones(1)
+            # 12/30/2019 changed back to 0, because the first instant was
+            #            already taken into account
+            s_combined = np.ones(0)
 
             # self (regimes with no possible influencer)
             for i in range(0, len(s_sf)):
