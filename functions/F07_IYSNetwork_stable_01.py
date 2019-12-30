@@ -1,10 +1,17 @@
 # coding: utf-8
 
 """
-10/24/2019 note
-Rereading the code, checking the correctness. Improving the comments.
+File name:
+F07_IYSNetwork_stable_01.py
 
 A class that contains the i-YS network.
+
+12/29/2019 note
+This file is an older version. Please use the modified version
+F07_IYSNetwork_stable_02.py
+
+10/24/2019 note
+Rereading the code, checking the correctness. Improving the comments.
 
 F05 version:
 this version is written to test if the detection code is correct.

@@ -1,14 +1,18 @@
 # coding: utf-8
 
 """
+File name:
+F07_IYSNetwork_stable_02.py
+
+A class that contains the i-YS network.
+
 10/31/2019 note
 stable_02
 the code is examined and altered in accordance with F06-node stable
 02, where we make the first signal 1 instead of 0.
+
 10/24/2019 note
 Rereading the code, checking the correctness. Improving the comments.
-
-A class that contains the i-YS network.
 
 F05 version:
 this version is written to test if the detection code is correct.
@@ -37,7 +41,7 @@ class IYSNetwork:
         The history of signals of all nodes.
     """
 
-    def __init__(self, adjacency_matrix, rho = 0.75):
+    def __init__(self, adjacency_matrix, rho=0.75):
         """
         Creates an Interacting YS network object whose name is *name*,
         with a network decided by *adjacency_matrix*.

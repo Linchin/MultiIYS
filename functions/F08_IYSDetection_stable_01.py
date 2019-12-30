@@ -1,5 +1,6 @@
 """
 A class that detects the i-YS relationship.
+
 08/01/2019
 added the history of estimated rho value.
 """
@@ -21,7 +22,6 @@ class IYSDetection:
         """
 
         # parameters
-
         self.__rep_alpha = gibbs_rep  # rounds of Gibbs sampler for alpha
 
         # instance variables
@@ -78,7 +78,6 @@ class IYSDetection:
         and then update the model likelihoods based on new signal.
         Args:
             new_col:
-
         Returns:
             None.
         """

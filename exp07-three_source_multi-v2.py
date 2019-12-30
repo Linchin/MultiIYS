@@ -1,11 +1,17 @@
 # coding: utf-8
 
 """
-Date: 07/08/2019
-Author: Lingqing Gan @ Stony Brook University
+File name:
+exp07-three_source_multi-v2.py
 
-Title: exp07-three_source_multi.py
+Author:
+Lingqing Gan @ Stony Brook University
 
+12/30/2019 notes
+Compared with the other exp07 file. We should use
+the exp07 file without v2 at the end.
+
+07/08/2019 notes
 Description:
 1. Run the three node models multiple times;
 2. Collect data according to the given format;
@@ -57,7 +63,7 @@ def main():
 
     for rep_exp_index in range(0, total_rep):
 
-        print("Current repetition: rep=", rep_exp_index)
+        print("Current repetition: rep =", rep_exp_index)
 
         # =================================================
         #                      MODEL
@@ -68,10 +74,12 @@ def main():
         # item[i][j]=1 means node i influences node j
         # item[i][i]=0 all the time though each node technically
         # influences themselves
-        adjacency_matrix = np.array([[0,1,1], [1,0,0], [1,0,0]])
+        adjacency_matrix = np.array([[0, 0, 0],
+                                     [0, 0, 1],
+                                     [1, 0, 0]])
 
         # create the i-YS network object instance
-        network = IYSNetwork(adjacency_matrix, rho = rho)
+        network = IYSNetwork(adjacency_matrix, rho=rho)
 
         # create the i-YS detection object instance
         regime_detection = IYSDetection(network_size, gibbs_rep)
@@ -88,7 +96,6 @@ def main():
         # save the likelihood history
         aprob_history = regime_detection.aprob_history
         rho_estimate = regime_detection.rho_history
-
 
         for i in range(0, network_size):
 
