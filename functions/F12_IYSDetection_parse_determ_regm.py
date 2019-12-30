@@ -310,6 +310,7 @@ class IYSDetection_parse_dtm_rgm:
                     # check if all node-neighbor pairs have enough unambiguous regimes
                     if np.sum(self.__regime_status) == self.__network_size**2:
                         self.__regime_reached = True
+                        break
 
             # case 2: there is exactly 1 possible influencer
             elif count_parse == 1:
@@ -336,6 +337,7 @@ class IYSDetection_parse_dtm_rgm:
                     # check if all node-neighbor pairs have enough unambiguous regimes
                     if np.sum(self.__regime_status) == self.__network_size**2:
                         self.__regime_reached = True
+                        break
 
             # case 3: there are at least 2 possible influencers
             else:
@@ -414,18 +416,24 @@ class IYSDetection_parse_dtm_rgm:
                 """
                 # 1) Generate the sequence related to node i & j
                 #    given influenced/not influenced
+
                 s_sf = self.__pure_regime[i][i]
                 s_nb = self.__pure_regime[i][j]
+
+                # print("check length:", (i, j), len(s_sf), len(s_nb))
 
                 s_combined_m0 = self.__combine_parsed_signals(s_sf, s_nb, "m0")
                 s_combined_m1 = self.__combine_parsed_signals(s_sf, s_nb, "m1")
 
                 n_m0 = self.__book_keeping_from_time(s_combined_m0)
                 n_m1 = self.__book_keeping_from_time(s_combined_m1)
+                # print(n_m0)
+                # print(n_m1)
 
                 # 2) Gibbs sampling on the just generated sequence
                 alpha_m0 = self.__gibbs_sampling(n_m0)
                 alpha_m1 = self.__gibbs_sampling(n_m1)
+                print("alpha_0, alpha_1:", alpha_m0, alpha_m1)
 
                 # 3) Calculate the likelihood of both models
                 lklhd_m0 = self.__ys_seq_likelihood(n_m0, alpha_m0)
@@ -489,7 +497,8 @@ class IYSDetection_parse_dtm_rgm:
                 return np.zeros(0)
 
             # initialize the combined signal
-            s_combined = np.ones(0)
+            # 12/29/2019 changed from (0) to (1)
+            s_combined = np.ones(1)
 
             # self (regimes with no possible influencer)
             for i in range(0, len(s_sf)):
@@ -513,6 +522,11 @@ class IYSDetection_parse_dtm_rgm:
                         # 11/07/2019 change
                         temp[item - 1] = -1
                 s_combined = np.concatenate((s_combined, temp))
+
+            # 12/29/2019 added:
+            # remove the last 1
+            if len(s_nb) > 0:
+                s_combined = s_combined[0:-1]
 
             return s_combined
 
