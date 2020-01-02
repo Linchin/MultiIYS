@@ -16,6 +16,10 @@ F12_IYSDetection_parse_determ_regm.py
 
 Author: Lingqing Gan @ Stony Brook University
 
+01/02/2019 notes (exp18)
+For now it only works on two node network. For 3
+node it doesn't work correctly.
+
 12/29/2019 notes (exp18)
 This version is based on the stable version exp16.
 The improvement is to make the fixed total time
@@ -76,6 +80,9 @@ Then we can analyze it.
 import numpy as np
 import time
 import pickle
+import os
+from os.path import join
+
 
 from functions.F07_IYSNetwork_stable_02 import IYSNetwork
 from functions.F12_IYSDetection_parse_determ_regm import IYSDetection_parse_dtm_rgm
@@ -88,12 +95,12 @@ def main():
     # =================================================
     #                    PARAMETERS
     # =================================================
-    network_size = 3
+    network_size = 2
 
     total_rep = 1
     gibbs_rep = 20000
     rho = 0.75
-    regimes_required = 3
+    regimes_required = 20
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
     # data section of the dict to be saved
@@ -112,7 +119,7 @@ def main():
         # item[i][i]=0 all the time though each node technically
         # influences themselves
         adjacency_matrix = np.zeros((network_size, network_size))
-        # adjacency_matrix[0, 1] = 1
+        adjacency_matrix[0, 1] = 1
         # adjacency_matrix[1, 0] = 1
 
         # create the i-YS network object instance
@@ -157,8 +164,14 @@ def main():
                                 "data format": "rep, i, j"
                                 },
                  "data": data_dict}
+
+    # absolute dir the script is in
+    script_dir = os.path.dirname(__file__)
+    rel_path_temp = "result_temp"
+
     # the file name
     file_name = "exp18-data-" + time_string + "(determined_regime).pickle"
+    complete_file_name = join(script_dir, rel_path_temp, file_name)
     print("Saved file name: ", file_name)
     # save the file
     with open(file_name, 'wb') as handle:

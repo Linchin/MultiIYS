@@ -23,7 +23,6 @@ This is the stable version of the code.
 It is changed so we can run real data.
 
 
-
 12/02/2019 note
 development after exp14.
 The code finally worked. Now we need further tests.

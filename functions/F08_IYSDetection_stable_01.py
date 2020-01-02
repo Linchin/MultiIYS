@@ -154,6 +154,8 @@ class IYSDetection:
             # if self.__new_regime_indicator[i] == 1:
             # to make the program run faster we let the detection
             # only estimate in the last time slot
+            # 12/29/2019 note
+            # actually 1000th
             if self.__network_time == 999:
 
                 # list that saves the aprob of each model
@@ -163,20 +165,16 @@ class IYSDetection:
                 for j in range(0, 2**(self.__network_size-1)):
 
                     # generate code for the current model
-
-                    # (
+                    # Note:
                     # the ith node is located at the ith last digit
                     # if a digit is 1, that means the corresponding
                     # node is influencing the ith node in this model
-                    # )
-
                     current_model_code = self.__gen_code(i, j,
-                                                         self.__network_size)
+                                                    self.__network_size)
 
                     # calculate the likelihood of current model
-
                     model_likelihood, rho_est = self.__model_likelihood(i,
-                                                               current_model_code)
+                                                        current_model_code)
                     aprob_save.append(model_likelihood)
 
                     self.__likelihood_history[i][j].append(model_likelihood)
@@ -244,29 +242,25 @@ class IYSDetection:
 
         # merge the signals from all the influencing neighbors
         # so they can be looked as the equivalent of a single node
-
         new_sequence = [0. for j in range(0, len(s_obj))]
 
         for i in neighbor_index_from_model:
-
             for j in range(0, len(s_obj)):
-
                 if s_n[i][j] == 1:
                     new_sequence[j] = 1
 
         book_keeping_results = self.__book_keeping_m1(new_sequence, s_obj)
-
         return book_keeping_results
 
     def __gibbs_sampling(self, n):
 
         # force the gibbs result to be 0.75
         # return 0.75
+        # No longer did the above.
 
         # parameters
         b_e = 1
         a_e = 1
-
         alpha_e = 0.75
 
         for rep_alpha_index in range(0, self.__rep_alpha):
@@ -318,33 +312,25 @@ class IYSDetection:
         n2 = np.array([])
 
         if len(s1) == len(s2):
-
             counter = 0
-
             for i in range(0, len(s1)):
-
                 if s2[i] == 0 and s1[i] == 0:
                     counter += 1
-
                 elif s2[i] == 1 and s1[i] == 0:
                     counter += 1
                     n2 = np.append(n2, counter)
                     counter = 0
-
                 elif s2[i] == 0 and s1[i] == 1:
                     counter += 1
                     n2 = np.append(n2, -counter)
                     counter = 0
-
                 elif s2[i] == 1 and s1[i] == 1:
                     counter += 1
                     n2 = np.append(n2, counter)
                     counter = 0
-
                 else:
                     print("signal value is not 0 or 1.")
                     exit(-1)
-
         else:
             print("error!! len(s1) != len(s2)!! --function: book_keeping_m1")
             exit(-1)
@@ -374,15 +360,10 @@ class IYSDetection:
         """
 
         p = 1.
-
         for i in n:
-
             if i > 0:
-
                 p *= alpha * scipy.special.beta(i, alpha + 1) * 1.5**abs(i)
-
             else:
-
                 p *= alpha * scipy.special.beta(-i, alpha) * 1.5**abs(i)
 
         return p
@@ -398,22 +379,13 @@ class IYSDetection:
         # )
 
         temp = bin(j)[2:].zfill(network_size - 1)
-
         if i == 0:
             current_model_code = temp + "0"
-
         else:
             current_model_code = ""
-
             for jj in range(0, len(temp)):
-
                 if jj + i == network_size - 1:
-
                     current_model_code += "0" + temp[jj]
-
                 else:
-
                     current_model_code += temp[jj]
-
         return current_model_code
-
