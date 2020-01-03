@@ -287,7 +287,7 @@ class IYSDetection_parse_dtm_rgm:
             # (0/1/2+ influencers)
             begin = self.__regime_shift_time[i][-2]
             end = self.__regime_shift_time[i][-1]
-            count_parse = 0
+            count_parse = 0   # counter of number of influencing neighbors
             for j in range(0, self.__network_size):
                 if j == i:
                     continue
