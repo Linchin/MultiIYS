@@ -106,7 +106,7 @@ class IYSDetection_parse_dtm_rgm:
         # time instant starting from 0
         self.__network_time = -1
 
-        # TO BE REMOVED IN F12:
+        # REMOVED IN F12:
         # total time instants to be observed
         # (to save the time of calculation, we only start the detection
         # process when the total time instants is reached.)
@@ -121,7 +121,7 @@ class IYSDetection_parse_dtm_rgm:
         # flag: if True, all node-neighbor pairs have reached the given
         # threshold self.__required_regime
         # readable through @property
-        self.__regime_reached = False
+        self.__all_regime_reached = False
 
         # matrix that stores the status of each node-neighbor pair
         # 0: not yet reached the self.__required_regime
@@ -172,6 +172,7 @@ class IYSDetection_parse_dtm_rgm:
         self.__ambi_regime_count = 0    # type: int
         self.__combined_signals = {}    # type: Dict[int: Dict[int: Dict["m0"/"m1": List]]]
         self.__bookkeeping_results = {}  # type: Dict[int: Dict[int: Dict["m0"/"m1": array]]]
+
         for i in range(0, self.__network_size):
             self.__signal_history[i] = []
             self.__likelihood_history[i] = {}
@@ -224,7 +225,7 @@ class IYSDetection_parse_dtm_rgm:
 
     @property
     def regime_reached(self):
-        return self.__regime_reached
+        return self.__all_regime_reached
 
     def read_new_time(self, new_col):
         """
@@ -237,7 +238,7 @@ class IYSDetection_parse_dtm_rgm:
         """
 
         # ----------------------------------------------------
-        # 1st time instant
+        #  1st time instant
         # ----------------------------------------------------
 
         if self.__network_time == -1:
@@ -249,15 +250,21 @@ class IYSDetection_parse_dtm_rgm:
             for i in range(0, self.__network_size):
                 self.__signal_history[i].append(1)
                 self.__regime_shift_time[i].append(0)
-                self.__unambi_regime_count[i][i] += 1
-                signals_temp_self = np.ones(2)
-                self.__pure_regime[i][i].append(signals_temp_self)
 
+                # 01/02/2020 change:
+                # remove the 1st mandatory time slot from
+                # counting as an unambiguous regime
+
+                # self.__unambi_regime_count[i][i] += 1
+                # signals_temp_self = np.ones(2)
+                # self.__pure_regime[i][i].append(signals_temp_self)
+
+            # F12: no longer need to estimate at the first time slot
             # self.__estimate_update()
             return 0
 
         # ----------------------------------------------------
-        # 2nd time instant and later
+        #  2nd time instant and later
         # ----------------------------------------------------
 
         self.__network_time += 1
@@ -309,7 +316,7 @@ class IYSDetection_parse_dtm_rgm:
                     self.__regime_status[i][i] = 1
                     # check if all node-neighbor pairs have enough unambiguous regimes
                     if np.sum(self.__regime_status) == self.__network_size**2:
-                        self.__regime_reached = True
+                        self.__all_regime_reached = True
                         break
 
             # case 2: there is exactly 1 possible influencer
@@ -336,7 +343,7 @@ class IYSDetection_parse_dtm_rgm:
                     self.__regime_status[i][influencer] = 1
                     # check if all node-neighbor pairs have enough unambiguous regimes
                     if np.sum(self.__regime_status) == self.__network_size**2:
-                        self.__regime_reached = True
+                        self.__all_regime_reached = True
                         break
 
             # case 3: there are at least 2 possible influencers
@@ -358,7 +365,7 @@ class IYSDetection_parse_dtm_rgm:
 
         # if the entire network has enough unambiguous regimes,
         # proceed with iYS model selection
-        if self.__regime_reached is True:
+        if self.__all_regime_reached is True:
             self.__estimate_update()
 
         return 0
@@ -420,10 +427,16 @@ class IYSDetection_parse_dtm_rgm:
                 s_sf = self.__pure_regime[i][i]
                 s_nb = self.__pure_regime[i][j]
 
+                # print("s_sf:", s_sf)
+                # print("s_nb:", s_nb)
+
                 # print("check length:", (i, j), len(s_sf), len(s_nb))
 
                 s_combined_m0 = self.__combine_parsed_signals(s_sf, s_nb, "m0")
                 s_combined_m1 = self.__combine_parsed_signals(s_sf, s_nb, "m1")
+
+                # print("s_combined_m0:", s_combined_m0)
+                # print("s_combined_m1:", s_combined_m1)
 
                 n_m0 = self.__book_keeping_from_time(s_combined_m0)
                 n_m1 = self.__book_keeping_from_time(s_combined_m1)
@@ -459,10 +472,12 @@ class IYSDetection_parse_dtm_rgm:
         b_e = 1
         a_e = 1
         alpha_e = 0.75
+
         for rep_alpha_index in range(0, self.__rep_alpha):
             # draw w_j
             # draw alpha
             b_draw_alpha = b_e
+
             for i in range(0, len(n)):
 
                 if n[i] > 0:
@@ -477,6 +492,7 @@ class IYSDetection_parse_dtm_rgm:
                     b_draw_alpha = b_draw_alpha - log(w)
 
             a_draw_alpha = a_e + len(n)
+
             alpha_e = np.random.gamma(shape=a_draw_alpha, scale=1/b_draw_alpha)
 
         return alpha_e
@@ -500,7 +516,7 @@ class IYSDetection_parse_dtm_rgm:
             # 12/29/2019 changed from (0) to (1)
             # 12/30/2019 changed back to 0, because the first instant was
             #            already taken into account
-            s_combined = np.ones(0)
+            s_combined = np.zeros(0)
 
             # self (regimes with no possible influencer)
             for i in range(0, len(s_sf)):
@@ -561,7 +577,13 @@ class IYSDetection_parse_dtm_rgm:
         """
 
         # generate the sequence after book keeping
-        n = np.array([])
+        # 01/02/2020
+        # changed from [] to [1]
+        if s_combined[0] == 0:
+            n = np.array([0])
+        else:
+            n = np.array([])
+
         for i in range(0, len(s_combined)):
             if s_combined[i] == 1:
                 n = np.append(n, 1)
