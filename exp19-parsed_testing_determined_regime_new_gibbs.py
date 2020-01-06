@@ -2,7 +2,7 @@
 
 """
 File Name:
-exp18-parsed_testing_stable.py
+exp19-parsed_testing_determined_regime_new_gibbs.py
 
 Based on:
 exp07-three_source_multi_parsed.py
@@ -14,7 +14,37 @@ exp15-parsed_testing.py
 exp16-parsed_testing_stable.py
 F12_IYSDetection_parse_determ_regm.py
 
+
 Author: Lingqing Gan @ Stony Brook University
+
+01/06/2020 notes (exp19)
+not sure if this is gonna work, since the length of the
+regimes might not be independent.
+Also, I found that there was an error with the formula of
+the iYS likelihood function.
+So I will work on exp20 first, where I correct the iYS
+likelihood formula.
+
+01/04/2020 notes (exp19)
+Because the results in exp18 still didn't work
+with >3 node networks, and a lot of debugging still
+didn't make it work. So now I'm trying out plan B.
+
+The inspiration came from a discussion with Prof. this
+past Thursday(01/02/2020). Professor mentioned that we
+haven't accounted for the variation involved while we
+estimate the parameter rho. This reminded me of something
+that I thought might have influenced the accuracy of the
+model selection results. When we are deciding whether the
+neighboring nodes are influencing the node of interest,
+we do a separate Gibbs sampling for each node-neighbor
+pair. Might there be any overfitting?
+
+So the idea here is, for each node of interest, we estimate
+the parameter rho using only its regimes that has definitely
+no influencer. Then we use this same estimated rho value
+for all model selection pertaining to this node.
+
 
 01/02/2019 notes (exp18)
 For now it only works on two node network. For 3
