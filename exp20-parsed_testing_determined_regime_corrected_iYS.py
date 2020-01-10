@@ -135,7 +135,7 @@ def main():
     total_rep = 1
     gibbs_rep = 20000
     rho = 0.75
-    regimes_required = 15
+    regimes_required = 20
     time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
     # data section of the dict to be saved
@@ -154,7 +154,8 @@ def main():
         # item[i][i]=0 all the time though each node technically
         # influences themselves
         adjacency_matrix = np.zeros((network_size, network_size))
-        # adjacency_matrix[0, 1] = 1
+        adjacency_matrix[0, 1] = 1
+        adjacency_matrix[0, 2] = 1
         # adjacency_matrix[1, 0] = 1
 
         # create the i-YS network object instance
@@ -209,7 +210,7 @@ def main():
     complete_file_name = join(script_dir, rel_path_temp, file_name)
     print("Saved file name: ", file_name)
     # save the file
-    with open(file_name, 'wb') as handle:
+    with open(complete_file_name, 'wb') as handle:
         pickle.dump(save_dict, handle,
                     protocol=pickle.HIGHEST_PROTOCOL)
         print("Data saved successfully!")
