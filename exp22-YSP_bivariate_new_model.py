@@ -2,7 +2,26 @@ __author__ = "Lingqing Gan"
 
 """
 File Name: 
-exp21-YSP_bivariate_new_model.py
+exp22-YSP_bivariate_new_model.py
+
+Notes 01/13/2020 (exp22)
+Now we have confirmed that exp21 is a working version of the 
+regime/partition detection program. Now we change it so we
+can add more complexity to the model.
+
+Notes 01/13/2020 (exp21)
+Before moving on to the new model, let's adapt and understand the 
+code, so we have a working version. Changed the file name to 
+exp21-YSP_bivariate_updated.py
+
+This version is called bivariate, and from what I understand
+from the code, this is still a single node model, where we apply
+the original algorithm. What is updated is, instead of a 1-d random
+signal, we receive a 2-d random signal with a randomly generated
+covariance matrix under a Wishart distribution.
+
+This is natural because Wishart distribution is a multi-D expansion
+of Gamma distribution.
 
 Notes 01/10/2020
 Based on the original YSP_bi-variate.py, we change the model
@@ -30,7 +49,7 @@ Let's first check out how we did it in the original 2018 code.
 
 #   AUTHOR:         Lingqing Gan (Stony Brook University)
 
-#   DATE:           07/01/2018 -
+#   DATE:           07/01/2018
 
 # ------------------------------------------------------------------------------------
 
@@ -48,6 +67,11 @@ import matplotlib.pyplot as plt
 
 
 def book_keeping_n(z):
+    """
+
+    :param z:
+    :return:
+    """
 
     n = np.array([])
     for i in range(0, len(z)):
@@ -76,6 +100,11 @@ def book_keeping_n(z):
 
 
 def book_keeping_z(z):
+    """
+
+    :param z:
+    :return:
+    """
 
     flag1 = 0
     flag2 = 0
@@ -114,12 +143,12 @@ def multi_student_pdf(x, loc, scale, df):
     '''
     Multivariate t-student density:
     output:
-        the density of the given element
+        d: the density of the given element
     input:
-        x = parameter (d dimensional numpy array or scalar)
-        mu = mean (d dimensional numpy array or scalar)
-        Sigma = scale matrix (dxd numpy array)
-        df = degrees of freedom
+        x: parameter (d dimensional numpy array or scalar)
+        mu: mean (d dimensional numpy array or scalar)
+        Sigma: scale matrix (dxd numpy array)
+        df: degrees of freedom
         d: dimension
     '''
 
@@ -139,6 +168,7 @@ a = 1
 b = 1
 
 alpha = np.random.gamma(a, scale=1/b)                # shape, scale, b is rate
+                                                # the YS parameter
 
 T = 1000                                      # total number of time instants
 
@@ -162,7 +192,7 @@ x = np.zeros(T)                 # new regime indicator
 
 y = np.zeros((T, 2))            # the Gaussian process signals
 
-precision = np.zeros((T, 2, 2))  # precision for Gaussian distribution
+precision = np.zeros((T, 2, 2))  # precision for Gaussian random signals
 
 precision_inverse = np.zeros((T, 2, 2))
 
@@ -242,7 +272,7 @@ n_e = book_keeping_n(x_e)
 #  2. inference           #
 # ----------------------- #
 
-inf_rep = 1000              # Gibbs sampling repetitions
+inf_rep = 1000              # Gibbs sampling repetitions (??)
 
 for inf_rep_count in range(0, inf_rep):
 
