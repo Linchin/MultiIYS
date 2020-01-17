@@ -4,6 +4,21 @@ __author__ = "Lingqing Gan"
 File Name: 
 exp22-YSP_bivariate_new_model.py
 
+Note 01/15/2020 (exp22)
+At first we were thinking about a linear regression for a,
+but later prof. came up with a Bayesian method integrated
+with Gibbs sampling. Now we alter the code into this form.
+
+To-Dos:
+* priors
+* change gibbs
+* len(a) should be adjustable
+* fix the Gibbs
+    - mean variance (w/o burn-in)
+    - mean alpha (w/o burn-in)
+
+x[t] = a0 + a1*x[t-1] + a2*x[t-2] + u[t]
+
 Notes 01/13/2020 (exp22)
 Now we have confirmed that exp21 is a working version of the 
 regime/partition detection program. Now we change it so we
@@ -68,9 +83,9 @@ import matplotlib.pyplot as plt
 
 def book_keeping_n(z):
     """
-
-    :param z:
-    :return:
+    turn the z sequence into a sequence of the length of each regime
+    :param z: the sequence of regime indices
+    :return: a sequence of the length of each regime
     """
 
     n = np.array([])
@@ -101,9 +116,9 @@ def book_keeping_n(z):
 
 def book_keeping_z(z):
     """
-
-    :param z:
-    :return:
+    Reorganize the values of z sequence after a new estimation.
+    :param z:  the sequence of regime indices
+    :return: the updated z sequence
     """
 
     flag1 = 0
@@ -249,10 +264,21 @@ b_e = 1
 D = 2
 alpha_e = 0.75
 
+# add process and hyperparameter to generate the linear parameters
+
+#
+
 x_e = np.zeros(T)
 precision_e = np.zeros((T, 2, 2))
 precision_e_inverse = np.zeros((T, 2, 2))
 
+# !
+# change the generating process. generate parameter
+# generate signals
+# regime generation not affected
+
+
+# create an arbitrary estimation as the Gibbs starter
 for i in range(0, len(x_e)):
     if i % 3 == 0:            # new regime
         if i == 0:
@@ -273,12 +299,20 @@ n_e = book_keeping_n(x_e)
 # ----------------------- #
 
 inf_rep = 1000              # Gibbs sampling repetitions (??)
+# need to add burn-in
 
 for inf_rep_count in range(0, inf_rep):
 
     print(str(inf_rep_count/inf_rep*100)+"%")
 
     # sample x
+    # decide the partitions
+    # how to determine the mean value?
+    # how do we save the mean value?
+    # maybe we need to add a mean value bookkeeping :)
+    # add an estimated baseline
+    # add a section to estimate the baseline parameter
+    # start from one parameter.
 
     for t in range(0, T):
 
@@ -362,6 +396,8 @@ for inf_rep_count in range(0, inf_rep):
     # sample precision matrix
 
     for regime_count in range(0, int(x_e[-1]+1)):
+        # for each regime, sample the precision matrix
+        # of this regime
 
         n_star = n_e[regime_count] + nu_e + D - 1
 
@@ -392,6 +428,7 @@ for inf_rep_count in range(0, inf_rep):
 
         V_e_rand_inv = np.linalg.inv(V_e_rand)
 
+        # save the estimated precision matrix to the time series
         for regime_count_x in range(0,len(x_e)):
             if x_e[regime_count_x] == regime_count:
 
@@ -399,12 +436,20 @@ for inf_rep_count in range(0, inf_rep):
                 precision_e_inverse[regime_count_x] = V_e_rand_inv
 
     # sample V
+    # new value is V_e
+    # V is the hyperparameter of precision matrix
+    # Conjugate prior for the covariance matrix
+    # inverse-Wishart prior, Multivariate normal likelihood
 
+    # scale matrix
     V_L = V0_e
 
+    # degree of freedom
     n_L = n0_e + (x_e[-1] + 1) * (D + nu_e - 1)
 
+    # update the scale matrix
     for regime_count in range(0, int(x_e[-1]+1)):
+        # for each regime
 
         for x_index in range(0,len(x_e)):
 
