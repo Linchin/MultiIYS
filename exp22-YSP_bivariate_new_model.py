@@ -255,22 +255,32 @@ for t in range(1, T):
 #  1. initialization     #
 # ---------------------- #
 
-V0_e = np.array([[1, 0], [0, 1]])
-n0_e = 3
-V_e = np.array([[1, 0], [0, 1]])                   # Wishart parameter matrix
-nu_e = 3
-a_e = 1
-b_e = 1
-D = 2
-alpha_e = 0.75
-
 # add process and hyperparameter to generate the linear parameters
 
-#
+V0_e = np.array([[1, 0], [0, 1]])   # starter parameter for Gibbs
+n0_e = 3                            # hyperparameter of degree of freedom
+V_e = np.array([[1, 0], [0, 1]])    # Wishart parameter matrix
+nu_e = 3                            # Wishart hyperparameter used for partitioning, degree of freedom
 
-x_e = np.zeros(T)
-precision_e = np.zeros((T, 2, 2))
-precision_e_inverse = np.zeros((T, 2, 2))
+a_e = 1                             # starter parameter for Gibbs
+b_e = 1                             # starter parameter for Gibbs
+
+D = 2                               # (Hyper) degree of freedom for the Wishart dist for the precision matrix
+
+alpha_e = 0.75                      # (Gibbs) alpha value
+
+li_coef_length = 2                  # number of the linear coefficients, first just 2. constant and 1st order
+a_e = np.zeros((T, li_coef_length)) # save the data for a coefficient for each time instant
+a_min = -4                          # assume each element of a is uniform dist on [a_min, a_max]
+a_max = 4
+
+# y[t] is the original signal
+# y_adj[t] is the mean-adjusted signal
+y_adj = np.zeros((T, 2, 2))
+
+x_e = np.zeros(T)                           # regime partitions
+precision_e = np.zeros((T, 2, 2))           # (Gibbs) precision matrix for each time instant
+precision_e_inverse = np.zeros((T, 2, 2))   # (Gibbs) precision matrix inverse
 
 # !
 # change the generating process. generate parameter
@@ -279,18 +289,35 @@ precision_e_inverse = np.zeros((T, 2, 2))
 
 
 # create an arbitrary estimation as the Gibbs starter
+# parameters estimated:
+# a vector
+# partitions
+# precision matrix for each partition
 for i in range(0, len(x_e)):
-    if i % 3 == 0:            # new regime
+    if i % 3 == 0:
+        # arbitrarily decide where the new regimes start, we use every
+        # three time slots
         if i == 0:
             x_e[i] = 0
         else:
             x_e[i] = x_e[i-1] + 1
+        # generate the new precision matrix/covariance matrix
+        # for the new regime
         precision_e[i] = wishart.rvs(scale=V_e, df=nu_e+D-1)
         precision_e_inverse[i] = np.linalg.inv(precision_e[i])
-    else:                   # keep the same regime
+        # generate the linear coefficients for this regime
+        for a_index in range(li_coef_length):
+            a_e[i][a_index] = np.random.uniform(low=a_min,
+                                                high=a_max)
+    else:
+        # if we remain in the same regime, we use the same
+        # precision mtx/covariance mtx, and the new linear
+        # coefficients
         x_e[i] = x_e[i-1]
         precision_e[i] = precision_e[i-1]
         precision_e_inverse[i] = precision_e_inverse[i-1]
+        for a_index in range(li_coef_length):
+            a_e[i][a_index] = a_e[i-1][a_index]
 
 n_e = book_keeping_n(x_e)
 
@@ -298,14 +325,16 @@ n_e = book_keeping_n(x_e)
 #  2. inference           #
 # ----------------------- #
 
-inf_rep = 1000              # Gibbs sampling repetitions (??)
 # need to add burn-in
+inf_rep = 1000              # Gibbs sampling repetitions (??)
 
 for inf_rep_count in range(0, inf_rep):
 
     print(str(inf_rep_count/inf_rep*100)+"%")
 
     # sample x
+
+    """
     # decide the partitions
     # how to determine the mean value?
     # how do we save the mean value?
@@ -313,6 +342,7 @@ for inf_rep_count in range(0, inf_rep):
     # add an estimated baseline
     # add a section to estimate the baseline parameter
     # start from one parameter.
+    """
 
     for t in range(0, T):
 
@@ -337,7 +367,9 @@ for inf_rep_count in range(0, inf_rep):
 
             sum_temp = p1+p2+p3
 
-            x_e[t] = np.random.choice([x_e[t], x_e[t-1], -10], size=1, p=[p1/sum_temp, p2/sum_temp, p3/sum_temp])
+            x_e[t] = np.random.choice([x_e[t], x_e[t-1], -10],
+                                      size=1,
+                                      p=[p1/sum_temp, p2/sum_temp, p3/sum_temp])
 
             x_e = book_keeping_z(x_e)
             n_e = book_keeping_n(x_e)
@@ -367,9 +399,9 @@ for inf_rep_count in range(0, inf_rep):
 
             # case 5
             p1 = (n_e[int(x_e[t])]-1) / (n_e[int(x_e[t])] + alpha_e) \
-                 * multivariate_normal.pdf(y[t], mean=(0,0), cov=precision_e_inverse[t])
+                 * multivariate_normal.pdf(y[t], mean=(0, 0), cov=precision_e_inverse[t])
             p2 = (n_e[int(x_e[t] + 1)]) / (n_e[int(x_e[t] + 1)] + alpha_e + 1) \
-                 * multivariate_normal.pdf(y[t + 1], mean=(0,0), cov=precision_e_inverse[t+1])
+                 * multivariate_normal.pdf(y[t + 1], mean=(0, 0), cov=precision_e_inverse[t+1])
             p3 = alpha_e / (1 + alpha_e) * multi_student_pdf(y[t], df=nu_e, loc=0, scale=nu_e * V_e)
 
             sum_temp = p1 + p2 + p3
@@ -393,23 +425,82 @@ for inf_rep_count in range(0, inf_rep):
             # any other cases
             continue
 
-    # sample precision matrix
+    # %% add estimation of a here
+
+    for regime_count in range(0, int(x_e[-1] + 1)):
+        # for each regime:
+
+        # length of current regime
+        current_length = n_e[regime_count]
+
+        # find signals of the current regime
+        cur_reg_signals = []
+        for x_index in range(0,len(x_e)):
+            if x_e[x_index] == regime_count:
+                cur_reg_signals.append(y[x_index])
+
+        cur_reg_signals = np.array(cur_reg_signals)
+
+        # construct the H matrix
+        H_mat = np.zeros((current_length, li_coef_length))
+
+        for local_t in range(current_length):
+            for coef_index in range(0, li_coef_length):
+                if coef_index == 0:
+                    H_mat[local_t][coef_index] = 1
+                elif coef_index <= local_t:      # we just use the first dimension here
+                    H_mat[local_t][coef_index] = cur_reg_signals[local_t][0]
+
+        # calculate mean vector
+        # a = (H^(T)H)^(-1)H^(T)X
+        square_mat = np.matmul(H_mat.transpose(), H_mat)
+        square_mat_inverse = np.linalg.inv(square_mat)
+        mult_temp = np.matmul(square_mat_inverse, H_mat.transpose())
+        a_mean = np.matmul(mult_temp, cur_reg_signals)
+
+        # calculate covariance matrix
+        # WE NEED TO FIX THE TWO DIMENSIONAL PRBLM
+        a_covariance = precision**2 * square_mat_inverse
+
+        # generate random a vector
+        a_random = np.random.multivariate_normal(mean=a_mean,
+                                                 cov=a_covariance)
+
+        # save the a values to the a matrix within this current regime
+        for x_index in range(0, len(x_e)):
+            if x_e[x_index] == regime_count:
+                a_e[x_index][:] = a_random[:]
+
+    # calculate the mean value sequence
+    mean_sequence = np.zeros(T)
+    for t in range(1, T):
+        mean_sequence[t] = a_e[t][0] + a_e[t][1] * mean_sequence[t-1]
+
+    # calculate the mean-adjusted signal
+    y_adj = np.substract(y, mean_sequence)
+
+    # %% sample precision matrix
 
     for regime_count in range(0, int(x_e[-1]+1)):
         # for each regime, sample the precision matrix
         # of this regime
 
+        # for a multi-variate normal dist, the precision matrix
+        # is Wishart dist
+
+        # n_star is the a posterior degree of freedom
         n_star = n_e[regime_count] + nu_e + D - 1
 
         V_e_inv = np.linalg.inv(V_e)
 
-        Y_e = np.zeros((int(n_e[regime_count]),2))
+        # use Y_e to convert prior to posterior
+        Y_e = np.zeros((int(n_e[regime_count]), 2))
 
         n_e_count = 0
 
         flag_x = 0
 
-        for x_index in range(0,len(x_e)):
+        for x_index in range(0, len(x_e)):
             if x_e[x_index] == regime_count:
                 flag_x = 1
                 Y_e[n_e_count][0] = y[x_index][0]
@@ -452,33 +543,25 @@ for inf_rep_count in range(0, inf_rep):
         # for each regime
 
         for x_index in range(0,len(x_e)):
-
             if x_e[x_index] == regime_count:
-
                 V_L = V_L + precision_e[int(x_index)]
-
                 break
 
     V_e = invwishart.rvs(df=n_L, scale=V_L)
 
     # sample alpha
-
     w = 0
-
     for i in n_e:
         w_i = beta.rvs(a=alpha_e+1, b=i)
         w = w + log(w_i)
-
     alpha_e = sci_gamma.rvs(a=a_e+x_e[-1]+1, scale=b_e-w)
 
 
 N_vector = range(1, T+1)
-
 cov_trace = np.zeros(T)
 cov_true = np.zeros(T)
 
 for i in range(0, T):
-
     cov_trace[i] = precision_e_inverse[i][0][1]
     cov_true[i] = precision_inverse[i][0][1]
 
