@@ -282,12 +282,9 @@ x_e = np.zeros(T)                           # regime partitions
 precision_e = np.zeros((T, 2, 2))           # (Gibbs) precision matrix for each time instant
 precision_e_inverse = np.zeros((T, 2, 2))   # (Gibbs) precision matrix inverse
 
-# !
-# change the generating process. generate parameter
-# generate signals
-# regime generation not affected
-
-
+# ---------------------------------
+#       Gibbs Initialization
+# ---------------------------------
 # create an arbitrary estimation as the Gibbs starter
 # parameters estimated:
 # a vector
@@ -325,7 +322,7 @@ n_e = book_keeping_n(x_e)
 #  2. inference           #
 # ----------------------- #
 
-# need to add burn-in
+# (need to add burn-in)
 inf_rep = 1000              # Gibbs sampling repetitions (??)
 
 for inf_rep_count in range(0, inf_rep):
@@ -360,9 +357,9 @@ for inf_rep_count in range(0, inf_rep):
 
             # case 3
             p1 = (n_e[int(x_e[t])] - 1)/(n_e[int(x_e[t])] + alpha_e) \
-                 * multivariate_normal.pdf(y[t], mean=(0, 0), cov=precision_e_inverse[t])
+                * multivariate_normal.pdf(y[t], mean=(0, 0), cov=precision_e_inverse[t])
             p2 = n_e[int(x_e[t-1])]/(n_e[int(x_e[t-1])] + alpha_e + 1) \
-                 * multivariate_normal.pdf(y[t], mean=(0, 0), cov=precision_e_inverse[t-1])
+                * multivariate_normal.pdf(y[t], mean=(0, 0), cov=precision_e_inverse[t-1])
             p3 = alpha_e/(1 + alpha_e) * multi_student_pdf(y[t], df=nu_e, loc=(0,0), scale=nu_e*V_e)
 
             sum_temp = p1+p2+p3
@@ -380,9 +377,9 @@ for inf_rep_count in range(0, inf_rep):
 
             # case 4
             p1 = (n_e[int(x_e[t]-1)])/(n_e[int(x_e[t]-1)] + alpha_e + 1) \
-                 * multivariate_normal.pdf(y[t-1], mean=(0,0), cov=precision_e_inverse[t-1])
+                * multivariate_normal.pdf(y[t-1], mean=(0,0), cov=precision_e_inverse[t-1])
             p2 = (n_e[int(x_e[t]+1)])/(n_e[int(x_e[t]+1)] + alpha_e + 1) \
-                 * multivariate_normal.pdf(y[t+1], mean=(0,0), cov=precision_e_inverse[t+1])
+                * multivariate_normal.pdf(y[t+1], mean=(0,0), cov=precision_e_inverse[t+1])
             p3 = alpha_e/(1 + alpha_e) * multi_student_pdf(y[t], df=nu_e, loc=0, scale=nu_e*V_e)
 
             sum_temp = p1 + p2 + p3
@@ -399,9 +396,9 @@ for inf_rep_count in range(0, inf_rep):
 
             # case 5
             p1 = (n_e[int(x_e[t])]-1) / (n_e[int(x_e[t])] + alpha_e) \
-                 * multivariate_normal.pdf(y[t], mean=(0, 0), cov=precision_e_inverse[t])
+                * multivariate_normal.pdf(y[t], mean=(0, 0), cov=precision_e_inverse[t])
             p2 = (n_e[int(x_e[t] + 1)]) / (n_e[int(x_e[t] + 1)] + alpha_e + 1) \
-                 * multivariate_normal.pdf(y[t + 1], mean=(0, 0), cov=precision_e_inverse[t+1])
+                * multivariate_normal.pdf(y[t + 1], mean=(0, 0), cov=precision_e_inverse[t+1])
             p3 = alpha_e / (1 + alpha_e) * multi_student_pdf(y[t], df=nu_e, loc=0, scale=nu_e * V_e)
 
             sum_temp = p1 + p2 + p3
@@ -425,7 +422,7 @@ for inf_rep_count in range(0, inf_rep):
             # any other cases
             continue
 
-    # %% add estimation of a here
+    # sample a vector
 
     for regime_count in range(0, int(x_e[-1] + 1)):
         # for each regime:
@@ -442,24 +439,26 @@ for inf_rep_count in range(0, inf_rep):
         cur_reg_signals = np.array(cur_reg_signals)
 
         # construct the H matrix
-        H_mat = np.zeros((current_length, li_coef_length))
+        # (This is the H matrix for a 2D signal)
+        H_mat = np.zeros((current_length * 2, li_coef_length))
 
         for local_t in range(current_length):
             for coef_index in range(0, li_coef_length):
                 if coef_index == 0:
                     H_mat[local_t][coef_index] = 1
+                    H_mat[local_t + current_length][coef_index] = 1
                 elif coef_index <= local_t:      # we just use the first dimension here
                     H_mat[local_t][coef_index] = cur_reg_signals[local_t][0]
+                    H_mat[local_t + current_length][coef_index] = cur_reg_signals[local_t][1]
 
         # calculate mean vector
-        # a = (H^(T)H)^(-1)H^(T)X
         square_mat = np.matmul(H_mat.transpose(), H_mat)
         square_mat_inverse = np.linalg.inv(square_mat)
         mult_temp = np.matmul(square_mat_inverse, H_mat.transpose())
         a_mean = np.matmul(mult_temp, cur_reg_signals)
 
         # calculate covariance matrix
-        # WE NEED TO FIX THE TWO DIMENSIONAL PRBLM
+        # solved: WE NEED TO FIX THE TWO DIMENSIONAL PRBLM
         a_covariance = precision**2 * square_mat_inverse
 
         # generate random a vector
