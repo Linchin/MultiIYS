@@ -4,6 +4,22 @@ __author__ = "Lingqing Gan"
 File Name: 
 exp22-YSP_bivariate_new_model.py
 
+Note 01/27/2020 (exp22)
+* Finished changing the program. Took a while!
+* Fixed an error about the singular matrix:
+    - Cause: Because of the nature of the linear model, the 
+      estimated mean value can be very large if the estimated
+      a vector turns out to be too big. This leads to a precision
+      matrix where all elements are very large. Then its inverse,
+      the covariance matrix, will be a matrix where all elements 
+      are so small that they are almost zero. With this small 
+      matrix, the program reports a sigular matrix.
+    - Fix: Since the prior of each element of vector a is a 
+      uniform distribution on [a_min, a_max], we simply regularize
+      the estimated values of each element of a to be within the
+      range [a_min, a_max]. So far no singular matrix reported.
+
+
 Note 01/15/2020 (exp22)
 At first we were thinking about a linear regression for a,
 but later prof. came up with a Bayesian method integrated
