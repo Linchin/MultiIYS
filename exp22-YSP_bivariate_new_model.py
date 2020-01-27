@@ -631,10 +631,10 @@ fig1, ax = plt.subplots(2, 1)
 [ax1, ax2] = ax
 ax1.plot(N_vector, cov_trace, label="est_covariance")
 ax1.plot(N_vector, cov_true, label="true_covariance")
-ax2.plot(N_vector, a[:, 0], label="true_a0")
-ax2.plot(N_vector, a[:, 1], label="true_a1")
-ax2.plot(N_vector, a_e[:, 0], label="est_a0")
-ax2.plot(N_vector, a_e[:, 1], label="est_a1")
+ax2.plot(N_vector, a[:, 0], '.', label="true_a0")
+ax2.plot(N_vector, a[:, 1], '^', label="true_a1")
+ax2.plot(N_vector, a_e[:, 0], 'o', label="est_a0")
+ax2.plot(N_vector, a_e[:, 1], '*', label="est_a1")
 
 
 ax1.legend(fontsize=14)
