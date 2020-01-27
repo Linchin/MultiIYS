@@ -184,7 +184,7 @@ b = 1
 alpha = np.random.gamma(a, scale=1/b)           # shape, scale, b is rate
 
 
-T = 100                                        # total number of time instants
+T = 500                                        # total number of time instants
 
 V0 = np.array([[1, 0], [0, 1]])
 
@@ -356,7 +356,7 @@ inf_rep = 1000              # Gibbs sampling repetitions (??)
 
 for inf_rep_count in range(0, inf_rep):
 
-    (str(inf_rep_count/inf_rep*100)+"%")
+    print(str(inf_rep_count/inf_rep*100)+"%")
 
     # sample x
 
@@ -517,7 +517,7 @@ for inf_rep_count in range(0, inf_rep):
         # generate random a vector
         a_random = np.random.multivariate_normal(mean=a_mean,
                                                  cov=a_covariance)
-        
+
         # regularize the values of the randomly generated a into the predefined range
         for temp_index in range(len(a_random)):
             if a_random[temp_index] < a_min:
