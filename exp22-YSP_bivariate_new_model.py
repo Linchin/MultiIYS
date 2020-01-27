@@ -352,7 +352,7 @@ n_e = book_keeping_n(x_e)
 # ----------------------- #
 
 # (need to add burn-in)
-inf_rep = 200              # Gibbs sampling repetitions (??)
+inf_rep = 1000              # Gibbs sampling repetitions (??)
 
 for inf_rep_count in range(0, inf_rep):
 
@@ -517,6 +517,13 @@ for inf_rep_count in range(0, inf_rep):
         # generate random a vector
         a_random = np.random.multivariate_normal(mean=a_mean,
                                                  cov=a_covariance)
+        
+        # regularize the values of the randomly generated a into the predefined range
+        for temp_index in range(len(a_random)):
+            if a_random[temp_index] < a_min:
+                a_random[temp_index] = a_min
+            elif a_random[temp_index] > a_max:
+                a_random[temp_index] = a_max
 
         # save the a values to the a matrix within this current regime
         for x_index in range(0, len(x_e)):
@@ -620,15 +627,17 @@ for i in range(0, T):
     cov_trace[i] = precision_e_inverse[i][0][1]
     cov_true[i] = precision_inverse[i][0][1]
 
-fig1, ax1 = plt.subplots()
+fig1, ax = plt.subplots(2, 1)
+[ax1, ax2] = ax
 ax1.plot(N_vector, cov_trace, label="est_covariance")
 ax1.plot(N_vector, cov_true, label="true_covariance")
-ax1.plot(N_vector, a[:, 0], label="true_a0")
-ax1.plot(N_vector, a[:, 1], label="true_a1")
-ax1.plot(N_vector, a_e[:, 0], label="est_a0")
-ax1.plot(N_vector, a_e[:, 1], label="est_a1")
+ax2.plot(N_vector, a[:, 0], label="true_a0")
+ax2.plot(N_vector, a[:, 1], label="true_a1")
+ax2.plot(N_vector, a_e[:, 0], label="est_a0")
+ax2.plot(N_vector, a_e[:, 1], label="est_a1")
 
 
 ax1.legend(fontsize=14)
+ax2.legend(fontsize=14)
 plt.show()
 # plt.savefig("bi-variate_covariance.pdf")
