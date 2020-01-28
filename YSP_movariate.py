@@ -464,7 +464,7 @@ plt.savefig("x_vs_std.pdf")
 # plot the regime partitions
 fig5, ax5 = plt.subplots()
 ax5.plot(N_vector, z, label="true partition")
-ax5.plot(N_vector, z, label="estimated partition")
+ax5.plot(N_vector, z_e, label="estimated partition")
 
 ax5.legend(fontsize=14)
 
