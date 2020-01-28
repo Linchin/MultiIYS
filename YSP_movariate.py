@@ -256,7 +256,7 @@ alpha_e_record = np.zeros(rep)
 
 n_i = book_keeping_n(z_e)
 
-for rep_index in range(0,rep):
+for rep_index in range(0, rep):
 
     print(rep_index)
 
@@ -432,13 +432,12 @@ ax2.legend(fontsize=14)
 plt.savefig("regime_count.pdf")
 
 
-
 # draw alpha value comparison
 
 
 fig3, ax3 = plt.subplots()
 
-alpha_true_vector = np.repeat(alpha,rep)
+alpha_true_vector = np.repeat(alpha, rep)
 
 ax3.plot(rep_vector, alpha_true_vector, label="real alpha")
 ax3.plot(rep_vector, alpha_e_record, label="alpha_e_vector")
@@ -450,11 +449,7 @@ plt.savefig("alpha_trace.pdf")
 
 # draw signal x vs. std
 
-
-
 fig4, ax4 = plt.subplots()
-
-
 
 std_vector = [1/sqrt(i) for i in v]
 
@@ -464,3 +459,13 @@ ax4.plot(N_vector, std_vector, label="std")
 ax4.legend(fontsize=14)
 
 plt.savefig("x_vs_std.pdf")
+
+# 01/28/2020 addition
+# plot the regime partitions
+fig5, ax5 = plt.subplots()
+ax5.plot(N_vector, z, label="true partition")
+ax5.plot(N_vector, z, label="estimated partition")
+
+ax4.legend(fontsize=14)
+
+plt.savefig("partition_compare.pdf")
