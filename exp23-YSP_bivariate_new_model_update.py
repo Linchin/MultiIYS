@@ -503,10 +503,10 @@ for inf_rep_count in range(0, inf_rep):
             continue
 
     # from x_e generate z_e that is the sequence of partition order
-    z_e = np.array(T)
+    z_e = np.zeros(T)
     z_counter = 1
     for t in range(0, T):
-        z_e = z_counter
+        z_e[t] = z_counter
         if x_e[t] == 1:
             z_counter += 1
 
