@@ -466,6 +466,6 @@ fig5, ax5 = plt.subplots()
 ax5.plot(N_vector, z, label="true partition")
 ax5.plot(N_vector, z, label="estimated partition")
 
-ax4.legend(fontsize=14)
+ax5.legend(fontsize=14)
 
 plt.savefig("partition_compare.pdf")
