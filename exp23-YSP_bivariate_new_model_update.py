@@ -395,7 +395,7 @@ n_e = book_keeping_n(x_e)
 # ----------------------- #
 
 # (need to add burn-in)
-inf_rep = 2000              # Gibbs sampling repetitions (??)
+inf_rep = 10000              # Gibbs sampling repetitions (??)
 
 # structure to save the data
 estimated_regimes_save = {}
@@ -407,10 +407,10 @@ estimated_alpha_save = np.zeros(inf_rep)
 
 start_time = int(round(time.time()))
 end_time = int(round(time.time()))
-time_left = "Unkown "
+time_left = "Unkown"
 for inf_rep_count in range(0, inf_rep):
 
-    print(str(inf_rep_count/inf_rep*100)+"%; Estimated time left: " + time_left + "min")
+    print(str(inf_rep_count/inf_rep*100)[0:4]+"%; Estimated time left: " + time_left + " min")
 
     # sample x
 
@@ -506,12 +506,12 @@ for inf_rep_count in range(0, inf_rep):
             continue
 
     # from x_e generate z_e that is the sequence of partition order
-    z_e = np.zeros(T)
-    z_counter = 1
-    for t in range(0, T):
-        z_e[t] = z_counter
-        if x_e[t] == 1:
-            z_counter += 1
+    # z_e = np.zeros(T)
+    # z_counter = 1
+    # for t in range(0, T):
+    #     z_e[t] = z_counter
+    #    if x_e[t] == 1:
+    #        z_counter += 1
 
     # sample a vector
 
