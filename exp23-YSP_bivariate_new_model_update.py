@@ -227,7 +227,7 @@ b = 1
 alpha = np.random.gamma(a, scale=1/b)           # shape, scale, b is rate
 
 
-T = 1000                                        # total number of time instants
+T = 100                                        # total number of time instants
 
 V0 = np.array([[1, 0], [0, 1]])
 
@@ -395,7 +395,7 @@ n_e = book_keeping_n(x_e)
 # ----------------------- #
 
 # (need to add burn-in)
-inf_rep = 1000              # Gibbs sampling repetitions (??)
+inf_rep = 2000              # Gibbs sampling repetitions (??)
 
 # structure to save the data
 estimated_regimes_save = {}
@@ -405,9 +405,12 @@ estimated_coef_vectors_save = {}
 estimated_signal_mean_save = {}
 estimated_alpha_save = np.zeros(inf_rep)
 
+start_time = int(round(time.time()))
+end_time = int(round(time.time()))
+time_left = "Unkown "
 for inf_rep_count in range(0, inf_rep):
 
-    print(str(inf_rep_count/inf_rep*100)+"%")
+    print(str(inf_rep_count/inf_rep*100)+"%; Estimated time left: " + time_left + "min")
 
     # sample x
 
@@ -684,6 +687,9 @@ for inf_rep_count in range(0, inf_rep):
     estimated_coef_vectors_save[inf_rep_count] = a_e
     estimated_signal_mean_save[inf_rep_count] = mean_sequence
     estimated_alpha_save[inf_rep_count] = alpha_e
+
+    end_time = millis = int(round(time.time()))
+    time_left = str(round((end_time - start_time)/(inf_rep_count+1)*(inf_rep-inf_rep_count)/60))
 
 data_dict["true_regimes"] = x
 data_dict["true_signals"] = y
