@@ -227,7 +227,7 @@ b = 1
 alpha = np.random.gamma(a, scale=1/b)           # shape, scale, b is rate
 
 
-T = 500                                        # total number of time instants
+T = 100                                        # total number of time instants
 
 V0 = np.array([[1, 0], [0, 1]])
 
@@ -395,7 +395,7 @@ n_e = book_keeping_n(x_e)
 # ----------------------- #
 
 # (need to add burn-in)
-inf_rep = 1000              # Gibbs sampling repetitions (??)
+inf_rep = 500              # Gibbs sampling repetitions (??)
 
 # structure to save the data
 estimated_regimes_save = {}
