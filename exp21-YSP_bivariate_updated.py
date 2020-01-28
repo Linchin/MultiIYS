@@ -165,7 +165,7 @@ b = 1
 alpha = np.random.gamma(a, scale=1/b)                # shape, scale, b is rate
                                                 # the YS parameter
 
-T = 1000                                      # total number of time instants
+T = 200                                      # total number of time instants
 
 V0 = np.array([[1, 0], [0, 1]])
 
@@ -267,7 +267,7 @@ n_e = book_keeping_n(x_e)
 #  2. inference           #
 # ----------------------- #
 
-inf_rep = 1000              # Gibbs sampling repetitions (??)
+inf_rep = 2000              # Gibbs sampling repetitions (??)
 
 for inf_rep_count in range(0, inf_rep):
 
@@ -432,9 +432,13 @@ for i in range(0, T):
     cov_trace[i] = precision_e_inverse[i][0][1]
     cov_true[i] = precision_inverse[i][0][1]
 
-fig1, ax1 = plt.subplots()
-ax1.plot(N_vector, cov_trace, label="est_covariance")
-ax1.plot(N_vector, cov_true, label="true_covariance")
-ax1.legend(fontsize=14)
+fig1, ax = plt.subplots(2,1)
+ax[0].plot(N_vector, cov_trace, label="est_covariance")
+ax[0].plot(N_vector, cov_true, label="true_covariance")
+ax[0].legend(fontsize=14)
+
+ax[1].plot(N_vector, x, label="true regimes")
+ax[1].plot(N_vector, x_e, label="estimated regimes")
+ax[1].legend(fontsize=14)
 plt.show()
 # plt.savefig("bi-variate_covariance.pdf")

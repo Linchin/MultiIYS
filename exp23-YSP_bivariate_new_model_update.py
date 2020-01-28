@@ -213,7 +213,9 @@ def multi_student_pdf(x, loc, scale, df):
     d = len(x)
     num = gamma(1. * (d+df)/2)
     denom1 = gamma(1.*df/2) * pow(df*pi, 1.*d/2) * pow(np.linalg.det(scale), 1./2)
-    denom2 = (1 + (1./df)*np.dot(np.dot((x - loc),np.linalg.inv(scale)), (x - loc)))**int((d+df)/2)
+    denom2 = pow(1 + (1./df)*np.dot(np.dot((x - loc), np.linalg.inv(scale)), (x - loc)),
+                 (d+df)/2)
+    # print(np.dot(np.dot((x - loc), np.linalg.inv(scale)), (x - loc)))
     denom = denom1 * denom2
     denom = float(denom)
     d = 1. * num / denom
@@ -258,7 +260,7 @@ precision_inverse = np.zeros((T, 2, 2))
 
 li_coef_length = 2              # the length of the coef vector a
 
-a = np.zeros((T, li_coef_length))         # the linear coefficient vector a
+a_vector = np.zeros((T, li_coef_length))         # the linear coefficient vector a
 
 signal_mean_vector = np.zeros((T, 2))   # the sequence that saves the mean value of the signals
 
@@ -288,7 +290,7 @@ for t in range(1, T):
         precision[t] = precision[t-1]
         precision_inverse[t] = precision_inverse[t-1]
         for a_index in range(li_coef_length):
-            a[t, a_index] = a[t-1, a_index]
+            a_vector[t, a_index] = a_vector[t-1, a_index]
 
     else:
         # start a new regime
@@ -296,12 +298,12 @@ for t in range(1, T):
         precision[t] = wishart.rvs(scale=V0, df=n0)
         precision_inverse[t] = np.linalg.inv(precision[t])
         for a_index in range(li_coef_length):
-            a[t, a_index] = np.random.uniform(low=a_min,
+            a_vector[t, a_index] = np.random.uniform(low=a_min,
                                               high=a_max)
 
     # calculate the mean values of the new signal
-    signal_mean_vector[t, 0] = a[t, 0] + a[t, 1] * signal_mean_vector[t-1, 0]
-    signal_mean_vector[t, 1] = a[t, 0] + a[t, 1] * signal_mean_vector[t-1, 1]
+    signal_mean_vector[t, 0] = a_vector[t, 0] + a_vector[t, 1] * signal_mean_vector[t-1, 0]
+    signal_mean_vector[t, 1] = a_vector[t, 0] + a_vector[t, 1] * signal_mean_vector[t-1, 1]
 
     # generate the new signals based on the mean values and covariance matrices
     y[t] = multivariate_normal.rvs(mean=signal_mean_vector[t],
@@ -395,7 +397,7 @@ n_e = book_keeping_n(x_e)
 # ----------------------- #
 
 # (need to add burn-in)
-inf_rep = 10000              # Gibbs sampling repetitions (??)
+inf_rep = 1000              # Gibbs sampling repetitions (??)
 
 # structure to save the data
 estimated_regimes_save = {}
@@ -440,10 +442,15 @@ for inf_rep_count in range(0, inf_rep):
 
             # case 3
             p1 = (n_e[int(x_e[t])] - 1)/(n_e[int(x_e[t])] + alpha_e) \
-                * multivariate_normal.pdf(y_adj[t], mean=(0, 0), cov=precision_e_inverse[t])
+                * multivariate_normal.pdf(y_adj[t], mean=(0, 0),
+                                          cov=precision_e_inverse[t])
             p2 = n_e[int(x_e[t-1])]/(n_e[int(x_e[t-1])] + alpha_e + 1) \
-                * multivariate_normal.pdf(y_adj[t], mean=(0, 0), cov=precision_e_inverse[t-1])
-            p3 = alpha_e/(1 + alpha_e) * multi_student_pdf(y_adj[t], df=nu_e, loc=(0,0), scale=nu_e*V_e)
+                * multivariate_normal.pdf(y_adj[t], mean=(0, 0),
+                                          cov=precision_e_inverse[t-1])
+            p3 = alpha_e/(1 + alpha_e) * multi_student_pdf(y_adj[t],
+                                                           df=nu_e,
+                                                           loc=(0, 0),
+                                                           scale=nu_e*V_e)
 
             sum_temp = p1+p2+p3
 
@@ -463,7 +470,10 @@ for inf_rep_count in range(0, inf_rep):
                 * multivariate_normal.pdf(y_adj[t-1], mean=(0, 0), cov=precision_e_inverse[t-1])
             p2 = (n_e[int(x_e[t]+1)])/(n_e[int(x_e[t]+1)] + alpha_e + 1) \
                 * multivariate_normal.pdf(y_adj[t+1], mean=(0, 0), cov=precision_e_inverse[t+1])
-            p3 = alpha_e/(1 + alpha_e) * multi_student_pdf(y_adj[t], df=nu_e, loc=0, scale=nu_e*V_e)
+            p3 = alpha_e/(1 + alpha_e) * multi_student_pdf(y_adj[t],
+                                                           df=nu_e,
+                                                           loc=0,
+                                                           scale=nu_e*V_e)
 
             sum_temp = p1 + p2 + p3
 
@@ -482,7 +492,10 @@ for inf_rep_count in range(0, inf_rep):
                 * multivariate_normal.pdf(y_adj[t], mean=(0, 0), cov=precision_e_inverse[t])
             p2 = (n_e[int(x_e[t] + 1)]) / (n_e[int(x_e[t] + 1)] + alpha_e + 1) \
                 * multivariate_normal.pdf(y_adj[t + 1], mean=(0, 0), cov=precision_e_inverse[t+1])
-            p3 = alpha_e / (1 + alpha_e) * multi_student_pdf(y[t], df=nu_e, loc=0, scale=nu_e * V_e)
+            p3 = alpha_e / (1 + alpha_e) * multi_student_pdf(y[t],
+                                                             df=nu_e,
+                                                             loc=0,
+                                                             scale=nu_e * V_e)
 
             sum_temp = p1 + p2 + p3
 
@@ -510,7 +523,7 @@ for inf_rep_count in range(0, inf_rep):
     # z_counter = 1
     # for t in range(0, T):
     #     z_e[t] = z_counter
-    #    if x_e[t] == 1:
+    #     if x_e[t] == 1:
     #        z_counter += 1
 
     # sample a vector
@@ -526,7 +539,7 @@ for inf_rep_count in range(0, inf_rep):
             # save the a values to the a matrix within this current regime
             for x_index in range(0, len(x_e)):
                 if x_e[x_index] == regime_count:
-                    a_e[x_index, :] = a[x_index, :]
+                    a_e[x_index, :] = a_vector[x_index, :]
                     break
             continue
 
@@ -678,7 +691,9 @@ for inf_rep_count in range(0, inf_rep):
     for i in n_e:
         w_i = beta.rvs(a=alpha_e+1, b=i)
         w = w + log(w_i)
-    alpha_e = sci_gamma.rvs(a=alpha_a_e+x_e[-1]+1, scale=alpha_b_e-w)
+    alpha_e = sci_gamma.rvs(a=alpha_a_e+x_e[-1]+1,
+                            scale=alpha_b_e-w)
+    # (a: shape parameter)
 
     # save all data generated during this Gibbs sampling iteration
     estimated_regimes_save[inf_rep_count] = x_e
@@ -695,7 +710,7 @@ data_dict["true_regimes"] = x
 data_dict["true_signals"] = y
 data_dict["true_precision_mtx"] = precision
 data_dict["true_covariance_mtx"] = precision_inverse
-data_dict["true_coef_vectors"] = a
+data_dict["true_coef_vectors"] = a_vector
 data_dict["true_signal_mean"] = signal_mean_vector
 
 
