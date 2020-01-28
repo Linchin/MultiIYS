@@ -227,7 +227,7 @@ b = 1
 alpha = np.random.gamma(a, scale=1/b)           # shape, scale, b is rate
 
 
-T = 100                                        # total number of time instants
+T = 1000                                        # total number of time instants
 
 V0 = np.array([[1, 0], [0, 1]])
 
@@ -395,7 +395,7 @@ n_e = book_keeping_n(x_e)
 # ----------------------- #
 
 # (need to add burn-in)
-inf_rep = 500              # Gibbs sampling repetitions (??)
+inf_rep = 1000              # Gibbs sampling repetitions (??)
 
 # structure to save the data
 estimated_regimes_save = {}
@@ -678,14 +678,14 @@ for inf_rep_count in range(0, inf_rep):
     alpha_e = sci_gamma.rvs(a=alpha_a_e+x_e[-1]+1, scale=alpha_b_e-w)
 
     # save all data generated during this Gibbs sampling iteration
-    estimated_regimes_save[inf_rep_count] = z_e
+    estimated_regimes_save[inf_rep_count] = x_e
     estimated_precision_mtx_save[inf_rep_count] = precision_e
     estimated_covariance_mtx_save[inf_rep_count] = precision_e_inverse
     estimated_coef_vectors_save[inf_rep_count] = a_e
     estimated_signal_mean_save[inf_rep_count] = mean_sequence
     estimated_alpha_save[inf_rep_count] = alpha_e
 
-data_dict["true_regimes"] = s
+data_dict["true_regimes"] = x
 data_dict["true_signals"] = y
 data_dict["true_precision_mtx"] = precision
 data_dict["true_covariance_mtx"] = precision_inverse
