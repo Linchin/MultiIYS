@@ -10,6 +10,8 @@ This is the one that works.
 Now the task is to convert it to a more up to date version 
 and capable of saving the data. Then we add the estimation of 
 vector a.
+
+Add functions to save data.
 """
 
 
@@ -36,6 +38,18 @@ from scipy.stats import t as student
 from math import sqrt
 from math import log
 
+
+# packages used to save the data
+
+import time
+import pickle
+import os
+from os.path import join
+
+time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
+
+# data section of the dict to be saved
+data_dict = {}
 
 # ---------------------------------------------------------------------------------------
 #
@@ -259,6 +273,8 @@ for t in range(1,T):
 rep = 1000           # rounds of Gibbs sampling
 rep_alpha = 2000     # rounds of Gibbs sampler for alpha
 
+alpha_estimate = np.zeros(rep_alpha)
+
 regime_count_e = np.zeros(rep)
 
 alpha_e_record = np.zeros(rep)
@@ -415,6 +431,8 @@ for rep_index in range(0, rep):
         alpha_e = np.random.gamma(shape=a_draw_alpha,
                                   scale=1 / b_draw_alpha)
 
+        alpha_estimate[rep_alpha_index] = alpha_e
+
     alpha_e_record[rep_index] = alpha_e
 
     # draw v_e[0:T-1]
@@ -439,13 +457,11 @@ for rep_index in range(0, rep):
 
                 v_e[j] = v_i
 
-
 # ---------------------------------------------------------------------------------------
 #
 #  plot the data
 #
 # ---------------------------------------------------------------------------------------
-
 
 N_vector = range(1,T+1)
 
@@ -458,7 +474,7 @@ ax1.plot(N_vector, v_e, label="v_e[T]")
 
 ax1.legend(fontsize=14)
 
-plt.savefig("precision_compare.pdf")
+plt.savefig("exp25-data-" + time_string + "precision_compare.pdf")
 
 # draw regime count
 
@@ -473,7 +489,7 @@ ax2.plot(rep_vector, regime_count_e, label="z_e[-1]")
 
 ax2.legend(fontsize=14)
 
-plt.savefig("regime_count.pdf")
+plt.savefig("exp25-data-" + time_string + "regime_count.pdf")
 
 
 # draw alpha value comparison
@@ -487,7 +503,7 @@ ax3.plot(rep_vector, alpha_e_record, label="alpha_e_vector")
 
 ax3.legend(fontsize=14)
 
-plt.savefig("alpha_trace.pdf")
+plt.savefig("exp25-data-" + time_string + "alpha_trace.pdf")
 
 # draw signal x vs. std
 
@@ -500,7 +516,7 @@ ax4.plot(N_vector, std_vector, label="std")
 
 ax4.legend(fontsize=14)
 
-plt.savefig("x_vs_std.pdf")
+plt.savefig("exp25-data-" + time_string + "x_vs_std.pdf")
 
 # 01/28/2020 addition
 # plot the regime partitions
@@ -510,4 +526,45 @@ ax5.plot(N_vector, z_e, label="estimated partition")
 
 ax5.legend(fontsize=14)
 
-plt.savefig("partition_compare.pdf")
+plt.savefig("exp25-data-" + time_string + "partition_compare.pdf")
+
+# ---------------------------------------------------------------------------------------
+#
+#  save the data
+#
+# ---------------------------------------------------------------------------------------
+
+# organize the data sub dict to be saved
+data_dict["true_regimes"] = z
+data_dict["true_signals"] = x
+data_dict["true_precision"] = v
+
+data_dict["estimated_regimes"] = z_e
+data_dict["estimated_precision_mtx"] = v_e
+data_dict["estimated_alpha"] = alpha_e_record
+
+
+# create the dict to save
+# parameter section + data section
+save_dict = {"parameters": {"Gibbs sampling iterations": rep,
+                            "alpha Gibbs sampling iterations": rep_alpha,
+                            "signal_dimension": 1,
+                            "alpha true value": alpha,
+                            "Sequence_length": T
+                            },
+             "data": data_dict}
+
+# absolute dir the script is in
+script_dir = os.path.dirname(__file__)
+rel_path_temp = "result_temp"
+
+# the file name
+file_name = "exp25-data-" + time_string + "(YSP_single_variable).pickle"
+complete_file_name = join(script_dir, rel_path_temp, file_name)
+print("Saved file name: ", file_name)
+
+# save the file
+with open(complete_file_name, 'wb') as handle:
+    pickle.dump(save_dict, handle,
+                protocol=pickle.HIGHEST_PROTOCOL)
+    print("Data saved successfully!")
