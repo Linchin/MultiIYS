@@ -50,6 +50,8 @@ time_string = time.strftime("%Y%m%d-%H%M%S", time.localtime())
 
 # data section of the dict to be saved
 data_dict = {}
+z_e_record = {}
+v_e_record = {}
 
 # ---------------------------------------------------------------------------------------
 #
@@ -223,7 +225,7 @@ d_e_v = 1 + 0.5 * x[0] ** 2       # c_i and d_i are Gamma parameters to draw pre
 
 v_e[0] = np.random.gamma(shape=c_e, scale=1/d_e)       # draw precision
 
-for t in range(1,T):
+for t in range(1, T):
 
     # calculate corresponding prob
 
@@ -457,6 +459,9 @@ for rep_index in range(0, rep):
 
                 v_e[j] = v_i
 
+    z_e_record[t] = z_e
+    v_e_record[t] = v_e
+
 # ---------------------------------------------------------------------------------------
 #
 #  plot the data
@@ -539,8 +544,8 @@ data_dict["true_regimes"] = z
 data_dict["true_signals"] = x
 data_dict["true_precision"] = v
 
-data_dict["estimated_regimes"] = z_e
-data_dict["estimated_precision_mtx"] = v_e
+data_dict["estimated_regimes"] = z_e_record
+data_dict["estimated_precision_mtx"] = v_e_record
 data_dict["estimated_alpha"] = alpha_e_record
 
 
