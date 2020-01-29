@@ -696,11 +696,12 @@ for inf_rep_count in range(0, inf_rep):
     # (a: shape parameter)
 
     # save all data generated during this Gibbs sampling iteration
-    estimated_regimes_save[inf_rep_count] = x_e
-    estimated_precision_mtx_save[inf_rep_count] = precision_e
-    estimated_covariance_mtx_save[inf_rep_count] = precision_e_inverse
-    estimated_coef_vectors_save[inf_rep_count] = a_e
-    estimated_signal_mean_save[inf_rep_count] = mean_sequence
+    # [:] gives a copy of the data rather than a pointer to the array
+    estimated_regimes_save[inf_rep_count] = x_e[:]
+    estimated_precision_mtx_save[inf_rep_count] = precision_e[:]
+    estimated_covariance_mtx_save[inf_rep_count] = precision_e_inverse[:]
+    estimated_coef_vectors_save[inf_rep_count] = a_e[:]
+    estimated_signal_mean_save[inf_rep_count] = mean_sequence[:]
     estimated_alpha_save[inf_rep_count] = alpha_e
 
     end_time = millis = int(round(time.time()))

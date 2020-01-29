@@ -2,9 +2,14 @@ __author__ = "Lingqing Gan"
 
 """
 File Name: 
-exp25-YSP_movariate.py
+exp27-YSP_movariate_add_linear.py
 
-Notes 01/28/2020:
+Notes 01/29/2020 (exp27):
+With the single variable version, we add the estimation of
+linear vector a_vect.
+
+
+Notes 01/28/2020 (exp25):
 This is the original code - single variable version.
 This is the one that works.
 Now the task is to convert it to a more up to date version 
@@ -135,6 +140,25 @@ d = 1
 
 T = 300              # length of time series
 
+# hyper parameter for vector a
+
+# length of a vector
+a_vect_length = 2
+
+# each element of a vector follows a uniform dist
+# on [a_vect_min, a_vect_max]
+a_vect_min = -1
+a_vect_max = 1
+
+a_vect = np.zeros((T, a_vect_length))          # nparray that saves the true vector data
+
+a_signal_mean = np.zeros(T)
+
+a_vect_e = np.zeros((T, a_vect_length))        # the current estimated value of a vector
+                                               # throughout the entire sequence
+
+a_vect_record = {}          # dict to save a_vect_e for each iteration of Gibbs sampling
+                            # key: Gibbs iteration; value: nparray of a_vect_e
 
 # ---------------------------------------------------------------------------------------
 #
@@ -161,10 +185,19 @@ z[0] = 1            # the first node is automatically assigned to the 1st regime
 
 v[0] = np.random.gamma(shape=c, scale=1/d)     # assign the first precision
 
-x[0] = np.random.normal(loc=0, scale=sqrt(1/v[0]))       # signal
+a_signal_mean[0] = 0                # the mean value of the given signal
+                            # starts from 0
+
+x[0] = np.random.normal(loc=a_signal_mean[0],
+                        scale=sqrt(1/v[0]))       # signal
 
 n_count = 1         # number of nodes in the current regime
 
+# randomly generate the values of a_vector for the 1st time slot
+for i in range(0, a_vect_length):
+    a_vect[0, i] = np.random.uniform(low=a_vect_min,
+                                     high=a_vect_max,
+                                     size=1)
 
 for t in range(1, T):
 
@@ -175,22 +208,43 @@ for t in range(1, T):
     s[t] = np.random.binomial(1, p)
 
     # repeat:
-    # n_count: update the number of nodes in the current regime
-    # z:       assign regime number to the t'th node
-    # v:       assign precision
-    # x:       assign i.i.d. signal
+    # n_count:        update the number of nodes in the current regime
+    # z:              assign regime number to the t'th node
+    # v:              assign precision
+    # a_vect:         assign a_vector values
+    # a_signal_mean:  the mean value of the new signal
+    # x:              assign i.i.d. signal
+
     if s[t] == 1:
         n_count = 1
         z[t] = z[t - 1] + 1
         v[t] = np.random.gamma(shape=c, scale=1/d)
-        x[t] = np.random.normal(loc=0, scale=sqrt(1/v[t]))
+        for i in range(0, a_vect_length):
+            a_vect[t, i] = np.random.uniform(low=a_vect_min,
+                                     high=a_vect_max,
+                                     size=1)
 
+        a_signal_mean[t] = a_vect[t, 0]
+        for i in range(1, a_vect_length):
+            if t-i >= 0:
+                a_signal_mean[t] += a_vect[t, i] * x[t-i]
+
+        x[t] = np.random.normal(loc=a_signal_mean[t],
+                                scale=sqrt(1/v[t]))
     else:
         n_count = n_count + 1
         z[t] = z[t - 1]
         v[t] = v[t - 1]
-        x[t] = np.random.normal(loc=0, scale=sqrt(1 / v[t]))
+        for i in range(0, a_vect_length):
+            a_vect[t, i] = a_vect[t-1, i]
 
+        a_signal_mean[t] = a_vect[t, 0]
+        for i in range(1, a_vect_length):
+            if t-i >= 0:
+                a_signal_mean[t] += a_vect[t, i] * x[t-i]
+
+        x[t] = np.random.normal(loc=a_signal_mean[t],
+                                scale=sqrt(1 / v[t]))
 
 # ---------------------------------------------------------------------------------------
 #
@@ -412,7 +466,92 @@ for rep_index in range(0, rep):
 
     regime_count_e[rep_index] = z_e[-1] + 1
 
-    # draw alpha Gibbs sampler
+    # =================
+    #   draw a vector
+    # =================
+    for regime_count_index in range(0, int(z_e[-1] + 1)):
+        # for each regime:
+
+        # length of current regime
+        current_length = n_i[regime_count_index]
+
+        # !!!! find absolute index of current regime signals
+        signal_absolute_index = []
+
+        # find signals of the current regime
+        cur_reg_signals = []
+        for x_index in range(0, len(z_e)):
+            if z_e[x_index] == regime_count_index:
+                cur_reg_signals.append(x[x_index, 0])
+                signal_absolute_index.append(x_index)
+
+        cur_reg_signals = np.array(cur_reg_signals)
+        signal_absolute_index = np.array(signal_absolute_index)
+
+        # the estimated precision and covariance of the current regime
+        # signals
+        for x_index in range(0, len(z_e)):
+            if z_e[x_index] == regime_count_index:
+                current_regime_sig_precision = v_e[x_index]
+                break
+
+        # construct the H matrix
+        H_mat_height = int(current_length)
+        H_mat_width = a_vect_length
+        H_mat = np.zeros((H_mat_height, H_mat_width))
+
+        initial_signal_index = signal_absolute_index[0]
+
+        for local_t in range(H_mat_height):
+            for coef_index in range(0, a_vect_length):
+                # fill in
+                if coef_index == 0:
+                    # all 1s on first column
+                    H_mat[local_t][coef_index] = 1
+                else:
+                    # the corresponding x index for this
+                    # location in the matrix is:
+                    # initial_signal_index + initial_signal_index - coef_index
+                    target_x_index = initial_signal_index\
+                                     + initial_signal_index\
+                                     - coef_index
+                    if target_x_index >= 0:
+                        # only put the x value if index >= 0
+                        # cause otherwise the signal doesn't exist
+                        H_mat[local_t][coef_index] = x[target_x_index]
+
+        # calculate mean vector
+        square_mat = np.matmul(H_mat.transpose(), H_mat)
+        square_mat_inverse = np.linalg.inv(square_mat)
+        mult_temp = np.matmul(square_mat_inverse, H_mat.transpose())
+        a_vect_mean = np.matmul(mult_temp, cur_reg_signals)
+
+        # calculate precision (not matrix here)
+        # calculate covariance matrix
+        a_vect_precision = current_regime_sig_precision**2 * square_mat
+        a_vect_covariance = np.linalg.inv(a_vect_precision)
+
+        # generate random a vector
+        a_vect_random = np.random.multivariate_normal(mean=a_vect_mean,
+                                                 cov=a_vect_covariance)
+
+        # regularize the values of the randomly generated a into the
+        # predefined range
+        for temp_index in range(len(a_vect_random)):
+            if a_vect_random[temp_index] < a_vect_min:
+                a_vect_random[temp_index] = a_vect_min
+            elif a_vect_random[temp_index] > a_vect_max:
+                a_vect_random[temp_index] = a_vect_max
+
+        # save the a vector to the a matrix within this current regime
+        for x_index in range(0, len(z_e)):
+            if z_e[x_index] == regime_count_index:
+                for temp_index in range(0, a_vect_length):
+                    a_vect_e[x_index, temp_index] = a_vect_random[temp_index]
+
+    # ================================
+    #    draw alpha (Gibbs sampler)
+    # ================================
     for rep_alpha_index in range(0, rep_alpha):
 
         # draw w_j

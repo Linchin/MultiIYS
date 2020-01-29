@@ -171,7 +171,7 @@ def book_keeping_z(z):
 
 
 def multi_student_pdf(x, loc, scale, df):
-    '''
+    """
     Multivariate t-student density:
     output:
         d: the density of the given element
@@ -181,7 +181,7 @@ def multi_student_pdf(x, loc, scale, df):
         Sigma: scale matrix (dxd numpy array)
         df: degrees of freedom
         d: dimension
-    '''
+    """
 
     d = len(x)
     num = gamma(1. * (d+df)/2)
@@ -476,6 +476,7 @@ for inf_rep_count in range(0, inf_rep):
         current_length = n_e[regime_count]
 
         # patch: skip current regime if length is 1
+        # 01/29/2020 is this really necessary??
         if current_length == 1:
             # save the a values to the a matrix within this current regime
             for x_index in range(0, len(x_e)):
@@ -487,22 +488,22 @@ for inf_rep_count in range(0, inf_rep):
         # find signals of the current regime
         # (just use the first dimension of the observed signals)
         cur_reg_signals = []
-        for x_index in range(0,len(x_e)):
+        for x_index in range(0, len(x_e)):
             if x_e[x_index] == regime_count:
-                cur_reg_signals.append(y[x_index][0])
+                cur_reg_signals.append(y[x_index, 0])
 
         cur_reg_signals = np.array(cur_reg_signals)
 
         # the estimated precision and covariance of the current regime
         # signals
-        for x_index in range(0,len(x_e)):
+        for x_index in range(0, len(x_e)):
             if x_e[x_index] == regime_count:
                 current_regime_sig_precision = precision_e[x_index]
                 current_regime_sig_covariance = precision_e_inverse[x_index]
                 break
 
-        x0_precision = current_regime_sig_precision[0][0]
-        x0_variance = current_regime_sig_covariance[0][0]
+        x0_precision = current_regime_sig_precision[0, 0]
+        x0_variance = current_regime_sig_covariance[0, 0]
 
         # construct the H matrix
         # (This is the H matrix for a 2D signal)
