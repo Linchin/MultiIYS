@@ -16,7 +16,7 @@ script_dir = os.path.dirname(__file__)
 rel_path_temp = "result_temp"
 
 # the file name
-file_name = "exp27-data-20200203-151542(YSP_single_variable_with_linear_a).pickle"
+file_name = "exp27-data-20200206-124123(YSP_single_variable_with_linear_a).pickle"
 complete_file_name = join(script_dir, rel_path_temp, file_name)
 print("Saved file name: ", file_name)
 

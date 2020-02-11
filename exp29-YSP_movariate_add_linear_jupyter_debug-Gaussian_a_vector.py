@@ -2,7 +2,12 @@ __author__ = "Lingqing Gan"
 
 """
 File Name: 
-exp27-YSP_movariate_add_linear.py
+exp29-YSP_movariate_add_linear_jupyter_debug-Gaussian_a_vector.py
+
+Notes 02/07/2020 (exp29):
+changes to do:
+1. 
+
 
 Notes 01/29/2020 (exp27):
 With the single variable version, we add the estimation of
