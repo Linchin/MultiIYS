@@ -270,7 +270,7 @@ a_scalar_precision_prior = 1
 
 # we don't really use a_scalar_e[0],
 # so just directly initialize a_scalar_e[1]
-a_scalar_e[1] = np.random.normal(loc=a_scalar_mean_prior,
+a_scalar_e[0] = np.random.normal(loc=a_scalar_mean_prior,
                                  scale=1/sqrt(a_scalar_precision_prior))
 
 # current posterior mean and precision for a, initialized as the same value
@@ -314,7 +314,8 @@ for t in range(1, T):
     # calculate corresponding prob
 
     # calculate the current mean adjusted value
-    x_mean_adjusted[t] = x_original_data[t] - x_original_data[t-1] * a_scalar_e[t]
+    x_mean_adjusted[t] = x_original_data[t] - (
+                         x_original_data[t-1] * a_scalar_e[t])
 
     p1 = n_count_e / (n_count_e + alpha_e) * norm.pdf(x_mean_adjusted[t],
                                                       loc=0,
