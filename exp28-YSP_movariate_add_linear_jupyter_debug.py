@@ -22,7 +22,7 @@ Add functions to save data.
 
 # ------------------------------------------------------------------------------------
 
-#   FILE_NAME:      YSP_movariate.py
+#   FILE_NAME:      legc11_YSP_movariate.py
 
 #   DESCRIPTION:    Gibbs sampling for single variable time series state
 #                   transition and precision (variance).

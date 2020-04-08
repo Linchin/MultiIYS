@@ -2,7 +2,7 @@ __author__ = "Lingqing Gan"
 
 """
 File Name: 
-exp25-YSP_movariate.py
+exp25-legc11_YSP_movariate.py
 
 Notes 01/28/2020:
 This is the original code - single variable version.
@@ -17,7 +17,7 @@ Add functions to save data.
 
 # ------------------------------------------------------------------------------------
 
-#   FILE_NAME:      YSP_movariate.py
+#   FILE_NAME:      legc11_YSP_movariate.py
 
 #   DESCRIPTION:    Gibbs sampling for single variable time series state
 #                   transition and precision (variance).

@@ -35,8 +35,8 @@ Notes:
 
 
 Ref:
- * YSP_inter_two_influence.py
- * YSP_inter_bi.py
+ * legc10_YSP_inter_two_influence.py
+ * legc02_YSP_inter_bi.py
 
 """
 

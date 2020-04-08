@@ -4,7 +4,7 @@ __author__ = "Lingqing Gan"
 
 #   FILE_NAME:      plot04-histogram_of_results_1.py
 
-#   DESCRIPTION:    reading the results produced by YSP_inter_bi_macro.py
+#   DESCRIPTION:    reading the results produced by legc06_YSP_inter_bi_macro.py
 #                   and draw a histogram with it.
 #
 
