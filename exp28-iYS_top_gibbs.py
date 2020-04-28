@@ -170,6 +170,7 @@ def main():
         # item[i][i]=0 all the time though each node technically
         # influences themselves
         adjacency_matrix = np.zeros((network_size, network_size))
+        #adjacency_matrix[0, 1] = 1
         #adjacency_matrix[0, 2] = 1
         #adjacency_matrix[1, 0] = 1
         #adjacency_matrix[1, 2] = 1
