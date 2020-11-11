@@ -20,22 +20,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f89204da-06ea-4f4c-9480-050865a38f0a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp31-iYS_top_gibbs.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp32-iYS_real_data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp33-sigfreq_vs_rho.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp34-data_model_sel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp36-iYS_top_gibbs_v2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp37-find_delay_1_man.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp38-iYS_real_data_v2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp39-plot_iYS_hist.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/exp40-real_data_auto_run.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/functions/F15_IYSNetwork_import_data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/functions/F16_IYSDetection_iYS_top_gibbs_v2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plot08-exp36_plot_convergence.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plot09-exp36_plot_histogram.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plot10-exp36_plot_convergence.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/MultiIYS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MultiIYS.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -291,7 +275,7 @@
       <workItem from="1602023751051" duration="10185000" />
       <workItem from="1602167548231" duration="43070000" />
       <workItem from="1603205384972" duration="85326000" />
-      <workItem from="1604961321899" duration="25329000" />
+      <workItem from="1604961321899" duration="25464000" />
     </task>
     <servers />
   </component>
