@@ -416,14 +416,29 @@ class IYSDetection_iYS_top_gibbs:
 
         alpha_e = 1
 
+        model_count = np.zeros(4)
+
         for gibbs_rep_index in range(self.__gibbs_rep):
             # Gibbs sampling for topology
 
+            if gibbs_rep_index >= self.__gibbs_rep/2:
+                if current_adj_matrix[0][1] == 0 and current_adj_matrix[1][0] == 0:
+                    model_count[0] += 1
+                elif current_adj_matrix[0][1] == 0 and current_adj_matrix[1][0] == 1:
+                    model_count[1] += 1
+                elif current_adj_matrix[0][1] == 1 and current_adj_matrix[1][0] == 0:
+                    model_count[2] += 1
+                elif current_adj_matrix[0][1] == 1 and current_adj_matrix[1][0] == 1:
+                    model_count[3] += 1
+
+
+            print(current_adj_matrix)
+            print(model_count)
             print("Gibbs rep: ", gibbs_rep_index)
 
             for i in range(0, self.__network_size):
                 for j in range(0, self.__network_size):
-                    print(i, j)
+                    # print(i, j)
 
                     if i == j:
                         continue

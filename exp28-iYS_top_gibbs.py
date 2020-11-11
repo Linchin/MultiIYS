@@ -31,8 +31,6 @@ For each node i
         do gibbs sampling suppose other remain the same
 Gibbs sampling for alpha
 
-
-
 01/06/2020 notes (exp20)
 A version that corrected the iYS prob function.
 
