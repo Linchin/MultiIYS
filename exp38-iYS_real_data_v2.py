@@ -3,6 +3,7 @@
 """
 File name:
 exp38-iYS_real_data_v2.py
+use F14 and F15
 
 10/29/2020
 use the time stamps for delay 1 found in 0530events.

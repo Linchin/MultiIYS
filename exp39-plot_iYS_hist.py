@@ -70,7 +70,7 @@ def main():
 
     w = 1
     n = math.ceil((max(regimes) - min(regimes)) / w)
-    ax1 = plt.hist(regimes, bins=n)
+    ax1 = plt.hist(regimes, bins=n, log=True)
 
     # ax1.hist(regimes)
     plt.savefig(complete_file_name, bbox_inches='tight')

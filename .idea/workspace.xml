@@ -20,11 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f89204da-06ea-4f4c-9480-050865a38f0a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/MultiIYS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/MultiIYS.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/exp41-real_data_auto_run_all.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/functions/F17_IYSDetection_iYS_top_gibbs_v3.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/exp28-iYS_top_gibbs.py" beforeDir="false" afterPath="$PROJECT_DIR$/exp28-iYS_top_gibbs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions/F14_IYSDetection_iYS_top_gibbs.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions/F14_IYSDetection_iYS_top_gibbs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exp38-iYS_real_data_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/exp38-iYS_real_data_v2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exp39-plot_iYS_hist.py" beforeDir="false" afterPath="$PROJECT_DIR$/exp39-plot_iYS_hist.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/exp40-real_data_auto_run.py" beforeDir="false" afterPath="$PROJECT_DIR$/exp40-real_data_auto_run.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +43,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="JupyterTrust" id="9d41ca63-f0f5-4bfa-8978-c6f9f106179a" />
   <component name="ProjectId" id="1PmzEii30mx6d05KwXznLrZDgrw" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -54,13 +57,14 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/functions" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -71,35 +75,20 @@
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="reference.settings.deploy.options" />
   </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings>
+        <option name="useSoftWraps" value="true" />
+      </console-settings>
+    </option>
+  </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS" />
       <recent name="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\functions" />
+      <recent name="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.exp38-iYS_real_data_v2">
-    <configuration name="F14_IYSDetection_iYS_top_gibbs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="MultiIYS" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/functions/F14_IYSDetection_iYS_top_gibbs.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.exp41-real_data_auto_run_all">
     <configuration name="Unnamed" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="MultiIYS" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -144,54 +133,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="exp36-iYS_top_gibbs_v2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="MultiIYS" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exp36-iYS_top_gibbs_v2.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="exp37-find_delay_1_man" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="MultiIYS" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exp37-find_delay_1_man.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="exp38-iYS_real_data_v2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="MultiIYS" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
       <option name="IS_MODULE_SDK" value="true" />
@@ -211,6 +159,9 @@
       <module name="MultiIYS" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
       <option name="IS_MODULE_SDK" value="true" />
@@ -226,21 +177,87 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="exp40-real_data_auto_run" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MultiIYS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exp40-real_data_auto_run.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="exp41-real_data_auto_run_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MultiIYS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/exp41-real_data_auto_run_all.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MultiIYS" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\lingq\Dropbox\research\projects\proj14_growing_community\T10_interactionYS\T02-scalable YS\simulation_git_home_pc_02\MultiIYS\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Python.Unnamed" />
-      <item itemvalue="Python.exp37-find_delay_1_man" />
       <item itemvalue="Python.exp38-iYS_real_data_v2" />
-      <item itemvalue="Python.F14_IYSDetection_iYS_top_gibbs" />
-      <item itemvalue="Python.exp36-iYS_top_gibbs_v2" />
       <item itemvalue="Python.exp39-plot_iYS_hist" />
+      <item itemvalue="Python.exp40-real_data_auto_run" />
+      <item itemvalue="Python.exp41-real_data_auto_run_all" />
+      <item itemvalue="Python.test" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.exp41-real_data_auto_run_all" />
+        <item itemvalue="Python.test" />
+        <item itemvalue="Python.exp40-real_data_auto_run" />
         <item itemvalue="Python.exp38-iYS_real_data_v2" />
         <item itemvalue="Python.exp39-plot_iYS_hist" />
-        <item itemvalue="Python.F14_IYSDetection_iYS_top_gibbs" />
-        <item itemvalue="Python.exp36-iYS_top_gibbs_v2" />
-        <item itemvalue="Python.exp37-find_delay_1_man" />
       </list>
     </recent_temporary>
   </component>
@@ -275,7 +292,8 @@
       <workItem from="1602023751051" duration="10185000" />
       <workItem from="1602167548231" duration="43070000" />
       <workItem from="1603205384972" duration="85326000" />
-      <workItem from="1604961321899" duration="25464000" />
+      <workItem from="1604961321899" duration="80082000" />
+      <workItem from="1606072762105" duration="7885000" />
     </task>
     <servers />
   </component>
@@ -307,46 +325,59 @@
       <screen x="0" y="0" width="1707" height="920" />
     </state>
     <state x="110" y="213" key="#xdebugger.XInspectDialog/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1599502047065" />
-    <state x="609" y="185" key="FileChooserDialogImpl" timestamp="1599423824168">
+    <state x="-1372" y="281" width="677" height="635" key="FileChooserDialogImpl" timestamp="1605841799168">
+      <screen x="-1920" y="115" width="1536" height="824" />
+    </state>
+    <state x="-1372" y="281" key="FileChooserDialogImpl/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605841799168" />
+    <state x="609" y="185" width="677" height="635" key="FileChooserDialogImpl/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1605800442063" />
+    <state width="1663" height="763" key="GridCell.Tab.0.bottom" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state x="609" y="185" key="FileChooserDialogImpl/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1599423824168" />
-    <state width="1663" height="508" key="GridCell.Tab.0.bottom" timestamp="1604970347199">
+    <state width="1493" height="242" key="GridCell.Tab.0.bottom/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.0.bottom/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
+    <state width="1663" height="763" key="GridCell.Tab.0.center" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state width="1663" height="508" key="GridCell.Tab.0.bottom/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347199" />
-    <state width="1663" height="508" key="GridCell.Tab.0.center" timestamp="1604970347199">
+    <state width="1493" height="242" key="GridCell.Tab.0.center/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.0.center/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
+    <state width="1663" height="763" key="GridCell.Tab.0.left" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state width="1663" height="508" key="GridCell.Tab.0.center/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347199" />
-    <state width="1663" height="508" key="GridCell.Tab.0.left" timestamp="1604970347199">
+    <state width="1493" height="242" key="GridCell.Tab.0.left/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.0.left/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
+    <state width="1663" height="763" key="GridCell.Tab.0.right" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state width="1663" height="508" key="GridCell.Tab.0.left/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347199" />
-    <state width="1663" height="508" key="GridCell.Tab.0.right" timestamp="1604970347199">
+    <state width="1493" height="242" key="GridCell.Tab.0.right/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.0.right/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
+    <state width="1663" height="763" key="GridCell.Tab.1.bottom" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state width="1663" height="508" key="GridCell.Tab.0.right/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347199" />
-    <state width="1663" height="508" key="GridCell.Tab.1.bottom" timestamp="1604970347200">
+    <state width="1493" height="242" key="GridCell.Tab.1.bottom/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.1.bottom/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
+    <state width="1663" height="763" key="GridCell.Tab.1.center" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state width="1663" height="508" key="GridCell.Tab.1.bottom/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347200" />
-    <state width="1663" height="508" key="GridCell.Tab.1.center" timestamp="1604970347199">
+    <state width="1493" height="242" key="GridCell.Tab.1.center/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.1.center/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
+    <state width="1663" height="763" key="GridCell.Tab.1.left" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state width="1663" height="508" key="GridCell.Tab.1.center/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347199" />
-    <state width="1663" height="508" key="GridCell.Tab.1.left" timestamp="1604970347199">
+    <state width="1493" height="242" key="GridCell.Tab.1.left/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.1.left/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
+    <state width="1663" height="763" key="GridCell.Tab.1.right" timestamp="1606075055361">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
-    <state width="1663" height="508" key="GridCell.Tab.1.left/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347199" />
-    <state width="1663" height="508" key="GridCell.Tab.1.right" timestamp="1604970347200">
-      <screen x="0" y="0" width="1707" height="920" />
-    </state>
-    <state width="1663" height="508" key="GridCell.Tab.1.right/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1604970347200" />
+    <state width="1493" height="242" key="GridCell.Tab.1.right/0.0.1707.920/-1920.115.1536.824@-1920.115.1536.824" timestamp="1605640863089" />
+    <state width="1663" height="763" key="GridCell.Tab.1.right/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1606075055361" />
     <state x="308" y="64" width="1223" height="710" key="SettingsEditor" timestamp="1602173465567">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
     <state x="308" y="64" width="1223" height="710" key="SettingsEditor/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1602173465567" />
+    <state x="333" y="165" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1605735591396">
+      <screen x="0" y="0" width="1707" height="920" />
+    </state>
+    <state x="333" y="165" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.0.1707.920/-1920.115.1536.824@0.0.1707.920" timestamp="1605735591396" />
     <state x="456" y="71" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1604503075505">
       <screen x="0" y="0" width="1707" height="920" />
     </state>
@@ -368,9 +399,11 @@
     <SUITE FILE_PATH="coverage/MultiIYS$exp39_plot_iYS_hist.coverage" NAME="exp39-plot_iYS_hist Coverage Results" MODIFIED="1604970324047" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/MultiIYS$exp31_iYS_top_gibbs.coverage" NAME="exp31-iYS_top_gibbs Coverage Results" MODIFIED="1599492559397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/MultiIYS$exp32_iYS_real_data.coverage" NAME="exp32-iYS_real_data Coverage Results" MODIFIED="1599506023322" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
+    <SUITE FILE_PATH="coverage/MultiIYS$exp40_real_data_auto_run.coverage" NAME="exp40-real_data_auto_run Coverage Results" MODIFIED="1605638620536" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/MultiIYS$plot08_exp36_plot_convergence.coverage" NAME="plot08-exp36_plot_convergence Coverage Results" MODIFIED="1602174793679" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/MultiIYS$plot09_exp36_plot_histogram.coverage" NAME="plot09-exp36_plot_histogram Coverage Results" MODIFIED="1602473143913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/MultiIYS$exp38_iYS_real_data_v2.coverage" NAME="exp38-iYS_real_data_v2 Coverage Results" MODIFIED="1604505015950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/MultiIYS$exp28_iYS_top_gibbs.coverage" NAME="exp28-iYS_top_gibbs Coverage Results" MODIFIED="1592422211214" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MultiIYS$exp41_real_data_auto_run_all.coverage" NAME="exp41-real_data_auto_run_all Coverage Results" MODIFIED="1606075013578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
   </component>
 </project>
